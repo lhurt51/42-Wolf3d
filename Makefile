@@ -38,6 +38,8 @@ NAME =		wolf3d
 
 SRCS =		$(LIBFT)/libft.a \
 			main.c	\
+			line_algo.c \
+			tools.c \
 
 THREAD =	-lpthread
 

@@ -40,6 +40,9 @@ void	pixel_to_img(t_mlx *new, int x, int y, int color)
 	int		i;
 
 	i = (x * 4) + (y * new->size_line);
+	printf("Size: %d\n", new->size_line);
+	printf("I: %d\n", i);
+	printf("PIXEL X: %d, Y: %d\n", x, y);
 	new->data[i++] = color & 0xFF;
 	new->data[i++] = (color >> 8) & 0xFF;
 	new->data[i] = (color >> 16) & 0xFF;
