@@ -12,7 +12,7 @@
 
 #include "wolf.h"
 
-void	draw_y(t_mlx *lst, t_point *point1, t_point *point2, t_line *new)
+void	draw_y(t_mlx *lst, t_intpoint *point1, t_intpoint *point2, t_line *new)
 {
 	int		x;
 	int		y;
@@ -21,15 +21,14 @@ void	draw_y(t_mlx *lst, t_point *point1, t_point *point2, t_line *new)
 	x = point1->x;
 	y = point1->y;
 	p = 2 * new->xans - new->yans;
-	if (x < (int)point2->x)
+	if (x < point2->x)
 		new->inc = 1;
 	else
 		new->inc = -1;
-	while (y < (int)point2->y)
+	while (y < point2->y)
 	{
 		if (x < W_WIDTH && y < W_HEIGHT)
 			pixel_to_img(lst, x, y, lst->env.color);
-		ft_putendl("HERE?");
 		if (p < 0)
 			p += 2 * new->xans;
 		else
@@ -41,7 +40,7 @@ void	draw_y(t_mlx *lst, t_point *point1, t_point *point2, t_line *new)
 	}
 }
 
-void	draw_x(t_mlx *lst, t_point *point1, t_point *point2, t_line *new)
+void	draw_x(t_mlx *lst, t_intpoint *point1, t_intpoint *point2, t_line *new)
 {
 	int		x;
 	int		y;
@@ -50,11 +49,11 @@ void	draw_x(t_mlx *lst, t_point *point1, t_point *point2, t_line *new)
 	x = point1->x;
 	y = point1->y;
 	p = 2 * new->yans - new->xans;
-	if (y < (int)point2->y)
+	if (y < point2->y)
 		new->inc = 1;
 	else
 		new->inc = -1;
-	while (x < (int)point2->x)
+	while (x < point2->x)
 	{
 		if (x < W_WIDTH && y < W_HEIGHT)
 			pixel_to_img(lst, x, y, lst->env.color);
@@ -69,15 +68,15 @@ void	draw_x(t_mlx *lst, t_point *point1, t_point *point2, t_line *new)
 	}
 }
 
-void	get_da(t_mlx *lst, t_point *point1, t_point *point2)
+void	get_da(t_mlx *lst, t_intpoint *point1, t_intpoint *point2)
 {
 	t_line		*new;
 
 	new = malloc(sizeof(t_line));
 	if (!new)
 		return ;
-	new->xans = fabs(point2->x - point1->x);
-	new->yans = fabs(point2->y - point1->y);
+	new->xans = abs(point2->x - point1->x);
+	new->yans = abs(point2->y - point1->y);
 	if (new->xans > new->yans)
 	{
 		if (point1->x > point2->x)

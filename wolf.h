@@ -20,18 +20,29 @@
 # include <mlx.h>
 # include "libft/libft.h"
 
-# include <stdio.h>
+#include <stdio.h>
+#include <time.h>
+#include <mach/clock.h>
+#include <mach/mach.h>
 
 # define M_HEIGHT 24
 # define M_WIDTH 24
-# define W_HEIGHT 480
-# define W_WIDTH 640
+# define W_HEIGHT 1080
+# define W_WIDTH 1920
+# define CAMERA_X(x) (2 * x / (double)(W_WIDTH) - 1) //x-coordinate in camera space
+# define DELTADIST(primary, secondary) (sqrt(1 + (secondary * secondary) / (primary * primary)))
 
 typedef struct		s_point
 {
 	double			x;
 	double			y;
 }					t_point;
+
+typedef struct		s_intpoint
+{
+	int				x;
+	int				y;
+}					t_intpoint;
 
 typedef struct		s_line
 {
@@ -42,6 +53,17 @@ typedef struct		s_line
 
 typedef struct		s_env
 {
+	t_point			pos; // x & y starting pos
+	t_point			dir; // starting direction vectors
+	t_point			plane; //the 2d raycaster version of camera plane
+	t_point			ray_dir;  //calculate ray position and direction
+	t_point			delta_dist; //length of ray from one x or y-side to next x or y-side
+	t_point			step; //what direction to step in x or y-direction (either +1 or -1)
+	double			frame_time; //time of the frame
+	double			cur_time;
+	int				side; //was a NS or a EW wall hit?
+	int				draw_start;
+	int				draw_end;
 	int				color;
 }					t_env;
 
@@ -60,6 +82,6 @@ typedef struct		s_mlx
 void			*error(char *msg);
 unsigned int	count_ord(char *av);
 void			pixel_to_img(t_mlx *new, int x, int y, int color);
-void			get_da(t_mlx *lst, t_point *point1, t_point *point2);
+void			get_da(t_mlx *lst, t_intpoint *point1, t_intpoint *point2);
 
 #endif
