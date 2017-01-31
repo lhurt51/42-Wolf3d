@@ -27,8 +27,14 @@
 
 # define M_HEIGHT 24
 # define M_WIDTH 24
-# define W_HEIGHT 1080
-# define W_WIDTH 1920
+# define W_HEIGHT 720
+# define W_WIDTH 1280
+# define T_SIZE 64
+# define CH_LEN 15
+# define CH_WID 1
+# define CH_OFF 2
+# define Y_ORIGIN (W_HEIGHT / 2)
+# define X_ORIGIN (W_WIDTH / 2)
 # define CAMERA_X(x) (2 * x / (double)(W_WIDTH) - 1) //x-coordinate in camera space
 # define DELTADIST(primary, secondary) (sqrt(1 + (secondary * secondary) / (primary * primary)))
 
@@ -53,6 +59,7 @@ typedef struct		s_line
 
 typedef struct		s_env
 {
+	int				*tex[8];
 	t_point			pos; // x & y starting pos
 	t_point			dir; // starting direction vectors
 	t_point			plane; //the 2d raycaster version of camera plane
@@ -61,6 +68,8 @@ typedef struct		s_env
 	t_point			step; //what direction to step in x or y-direction (either +1 or -1)
 	double			frame_time; //time of the frame
 	double			cur_time;
+	double			wall_dist;
+	int				line_h;
 	int				side; //was a NS or a EW wall hit?
 	int				draw_start;
 	int				draw_end;

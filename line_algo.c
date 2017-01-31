@@ -27,7 +27,7 @@ void	draw_y(t_mlx *lst, t_intpoint *point1, t_intpoint *point2, t_line *new)
 		new->inc = -1;
 	while (y < point2->y)
 	{
-		if (x < W_WIDTH && y < W_HEIGHT)
+		if ((x < W_WIDTH && x > 0) && (y < W_HEIGHT && y > 0))
 			pixel_to_img(lst, x, y, lst->env.color);
 		if (p < 0)
 			p += 2 * new->xans;
@@ -55,7 +55,7 @@ void	draw_x(t_mlx *lst, t_intpoint *point1, t_intpoint *point2, t_line *new)
 		new->inc = -1;
 	while (x < point2->x)
 	{
-		if (x < W_WIDTH && y < W_HEIGHT)
+		if ((x < W_WIDTH && x > 0) && (y < W_HEIGHT && y > 0))
 			pixel_to_img(lst, x, y, lst->env.color);
 		if (p < 0)
 			p += 2 * new->yans;
