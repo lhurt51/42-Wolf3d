@@ -57,15 +57,20 @@ typedef struct		s_line
 	float			xans;
 }					t_line;
 
-typedef struct		s_env
+typedef struct		s_vec
 {
-	int				*tex[8];
 	t_point			pos; // x & y starting pos
 	t_point			dir; // starting direction vectors
 	t_point			plane; //the 2d raycaster version of camera plane
 	t_point			ray_dir;  //calculate ray position and direction
 	t_point			delta_dist; //length of ray from one x or y-side to next x or y-side
 	t_point			step; //what direction to step in x or y-direction (either +1 or -1)
+}					t_vec;
+
+typedef struct		s_env
+{
+	int				*tex[8];
+	t_vec			vec;
 	double			frame_time; //time of the frame
 	double			cur_time;
 	double			wall_dist;

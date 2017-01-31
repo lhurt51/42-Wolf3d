@@ -60,38 +60,38 @@ double	get_time(void)
 void	set_env(t_mlx *obj, t_intpoint *map, int x)
 {
 	//calculate ray position and direction
-	obj->env.ray_dir.x = obj->env.dir.x + obj->env.plane.x * CAMERA_X(x);
-	obj->env.ray_dir.y = obj->env.dir.y + obj->env.plane.y * CAMERA_X(x);
+	obj->env.vec.ray_dir.x = obj->env.vec.dir.x + obj->env.vec.plane.x * CAMERA_X(x);
+	obj->env.vec.ray_dir.y = obj->env.vec.dir.y + obj->env.vec.plane.y * CAMERA_X(x);
 	//which box of the map we're in
-	map->x = (int)obj->env.pos.x;
-	map->y = (int)obj->env.pos.y;
+	map->x = (int)obj->env.vec.pos.x;
+	map->y = (int)obj->env.vec.pos.y;
 	//length of ray from one x or y-side to next x or y-side
-	obj->env.delta_dist.x = DELTADIST(obj->env.ray_dir.x, obj->env.ray_dir.y);
-	obj->env.delta_dist.y = DELTADIST(obj->env.ray_dir.y, obj->env.ray_dir.x);
+	obj->env.vec.delta_dist.x = DELTADIST(obj->env.vec.ray_dir.x, obj->env.vec.ray_dir.y);
+	obj->env.vec.delta_dist.y = DELTADIST(obj->env.vec.ray_dir.y, obj->env.vec.ray_dir.x);
 }
 
 void	find_dir_step(t_mlx *obj, t_intpoint *map, t_point *side_dist)
 {
 	//calculate step and initial sideDist
-	if (obj->env.ray_dir.x < 0)
+	if (obj->env.vec.ray_dir.x < 0)
 	{
-		obj->env.step.x = -1;
-		side_dist->x = (obj->env.pos.x - map->x) * obj->env.delta_dist.x;
+		obj->env.vec.step.x = -1;
+		side_dist->x = (obj->env.vec.pos.x - map->x) * obj->env.vec.delta_dist.x;
 	}
 	else
 	{
-		obj->env.step.x = 1;
-		side_dist->x = (map->x + 1.0 - obj->env.pos.x) * obj->env.delta_dist.x;
+		obj->env.vec.step.x = 1;
+		side_dist->x = (map->x + 1.0 - obj->env.vec.pos.x) * obj->env.vec.delta_dist.x;
 	}
-	if (obj->env.ray_dir.y < 0)
+	if (obj->env.vec.ray_dir.y < 0)
 	{
-		obj->env.step.y = -1;
-		side_dist->y = (obj->env.pos.y - map->y) * obj->env.delta_dist.y;
+		obj->env.vec.step.y = -1;
+		side_dist->y = (obj->env.vec.pos.y - map->y) * obj->env.vec.delta_dist.y;
 	}
 	else
 	{
-		obj->env.step.y = 1;
-		side_dist->y = (map->y + 1.0 - obj->env.pos.y) * obj->env.delta_dist.y;
+		obj->env.vec.step.y = 1;
+		side_dist->y = (map->y + 1.0 - obj->env.vec.pos.y) * obj->env.vec.delta_dist.y;
 	}
 }
 
@@ -105,14 +105,14 @@ void	exe_dda(t_mlx *obj, t_intpoint *map, t_point *side_dist)
 		//jump to next map square, OR in x-direction, OR in y-direction
 		if (side_dist->x < side_dist->y)
 		{
-			 side_dist->x += obj->env.delta_dist.x;
-			 map->x += obj->env.step.x;
+			 side_dist->x += obj->env.vec.delta_dist.x;
+			 map->x += obj->env.vec.step.x;
 			 obj->env.side = 0;
 		}
 		else
 		{
-			 side_dist->y += obj->env.delta_dist.y;
-			 map->y += obj->env.step.y;
+			 side_dist->y += obj->env.vec.delta_dist.y;
+			 map->y += obj->env.vec.step.y;
 			 obj->env.side = 1;
 		}
 		//Check if ray has hit a wall
@@ -125,10 +125,10 @@ void	find_draw_pnts(t_mlx *obj, t_intpoint *map)
 {
 	//Calculate height of line to draw on screen
 	if (obj->env.side == 0)
-		obj->env.wall_dist = (map->x - obj->env.pos.x + (1 - obj->env.step.x) / 2) / obj->env.ray_dir.x;
+		obj->env.wall_dist = (map->x - obj->env.vec.pos.x + (1 - obj->env.vec.step.x) / 2) / obj->env.vec.ray_dir.x;
 	else
-		obj->env.wall_dist = (map->y - obj->env.pos.y + (1 - obj->env.step.y) / 2) / obj->env.ray_dir.y;
-	obj->env.line_h = (int)(W_HEIGHT * 3 / obj->env.wall_dist);
+		obj->env.wall_dist = (map->y - obj->env.vec.pos.y + (1 - obj->env.vec.step.y) / 2) / obj->env.vec.ray_dir.y;
+	obj->env.line_h = (int)(W_HEIGHT * 2 / obj->env.wall_dist);
 	//calculate lowest and highest pixel to fill in current stripe
 	obj->env.draw_start = -obj->env.line_h / 2 + W_HEIGHT / 2;
 	if(obj->env.draw_start < 0)
@@ -194,15 +194,15 @@ void	choose_tex(t_mlx *obj, t_intpoint *map, int **tex, int x)
 
 	tex_num = worldmap[map->x][map->y] - 1;
 	if (obj->env.side == 0)
-		wall_x = obj->env.pos.y + obj->env.wall_dist * obj->env.ray_dir.y;
+		wall_x = obj->env.vec.pos.y + obj->env.wall_dist * obj->env.vec.ray_dir.y;
 	else
-		wall_x = obj->env.pos.x + obj->env.wall_dist * obj->env.ray_dir.x;
-	wall_x -= floor((wall_x));
+		wall_x = obj->env.vec.pos.x + obj->env.wall_dist * obj->env.vec.ray_dir.x;
+	wall_x -= floor(wall_x);
 
-	tex_x = (int)(wall_x * T_SIZE);
-	if (obj->env.side == 0 && obj->env.ray_dir.x > 0)
+	tex_x = (int)(wall_x * (double)(T_SIZE));
+	if (obj->env.side == 0 && obj->env.vec.ray_dir.x > 0)
 		tex_x = T_SIZE - tex_x - 1;
-	if (obj->env.side == 0 && obj->env.ray_dir.y < 0)
+	if (obj->env.side == 0 && obj->env.vec.ray_dir.y < 0)
 		tex_x = T_SIZE - tex_x - 1;
 
 	int ran;
@@ -235,12 +235,12 @@ void	init_tex(int x, int y, t_mlx *obj)
 	xcolor = x * 256 / T_SIZE;
 	ycolor = y * 256 / T_SIZE;
 	xycolor = y * 128 / T_SIZE + x * 128 / T_SIZE;
-	obj->env.tex[0][T_SIZE * x + y] = 65536 * 254 * (x != y && x != T_SIZE - y);
+	obj->env.tex[0][T_SIZE * x + y] = 65536 * 254 * (y != x && y != T_SIZE - x);
 	obj->env.tex[1][T_SIZE * x + y] = xycolor + 256 * xycolor + 65536 * xycolor;
 	obj->env.tex[2][T_SIZE * x + y] = 256 * xycolor + 65536 * xycolor;
 	obj->env.tex[3][T_SIZE * x + y] = xorcolor + 256 * xorcolor + 65536 * xorcolor;
 	obj->env.tex[4][T_SIZE * x + y] = 256 * xorcolor;
-	obj->env.tex[5][T_SIZE * x + y] = 65536 * 192 * (x % 16 && y % 16);
+	obj->env.tex[5][T_SIZE * x + y] = 65536 * 192 * (y % 16 && x % 16);
 	obj->env.tex[6][T_SIZE * x + y] = 65536 * ycolor;
 	obj->env.tex[7][T_SIZE * x + y] = 128 + 256 * 128 + 65536 * 128;
 }
@@ -294,12 +294,12 @@ void	init_rays(t_mlx *obj, int **tex)
 
 void	reset_struct(t_mlx *obj)
 {
-	obj->env.pos.x = 22.0;
-	obj->env.pos.y = 11.5;
-	obj->env.dir.x = -1.0;
-	obj->env.dir.y = 0.0;
-	obj->env.plane.x = 0.0;
-	obj->env.plane.y = 0.66;
+	obj->env.vec.pos.x = 22.0;
+	obj->env.vec.pos.y = 11.5;
+	obj->env.vec.dir.x = -1.0;
+	obj->env.vec.dir.y = 0.0;
+	obj->env.vec.plane.x = 0.0;
+	obj->env.vec.plane.y = 0.66;
 	obj->env.cur_time = 0.0;
 }
 
@@ -352,10 +352,10 @@ void	move_up(t_mlx *obj)
 	double	move_speed;
 
 	move_speed = obj->env.frame_time * 20.0;
-	if(worldmap[(int)(obj->env.pos.x + obj->env.dir.x * move_speed)][(int)obj->env.pos.y] == 0)
-		obj->env.pos.x += obj->env.dir.x * move_speed;
-	if(worldmap[(int)obj->env.pos.x][(int)(obj->env.pos.y + obj->env.dir.y * move_speed)] == 0)
-		obj->env.pos.y += obj->env.dir.y * move_speed;
+	if(worldmap[(int)(obj->env.vec.pos.x + obj->env.vec.dir.x * move_speed)][(int)obj->env.vec.pos.y] == 0)
+		obj->env.vec.pos.x += obj->env.vec.dir.x * move_speed;
+	if(worldmap[(int)obj->env.vec.pos.x][(int)(obj->env.vec.pos.y + obj->env.vec.dir.y * move_speed)] == 0)
+		obj->env.vec.pos.y += obj->env.vec.dir.y * move_speed;
 	run_img(obj);
 }
 
@@ -364,10 +364,10 @@ void	move_down(t_mlx *obj)
 	double	move_speed;
 
 	move_speed = obj->env.frame_time * 20.0;
-	if(worldmap[(int)(obj->env.pos.x - obj->env.dir.x * move_speed)][(int)obj->env.pos.y] == 0)
-		obj->env.pos.x -= obj->env.dir.x * move_speed;
-	if(worldmap[(int)obj->env.pos.x][(int)(obj->env.pos.y - obj->env.dir.y * move_speed)] == 0)
-		obj->env.pos.y -= obj->env.dir.y * move_speed;
+	if(worldmap[(int)(obj->env.vec.pos.x - obj->env.vec.dir.x * move_speed)][(int)obj->env.vec.pos.y] == 0)
+		obj->env.vec.pos.x -= obj->env.vec.dir.x * move_speed;
+	if(worldmap[(int)obj->env.vec.pos.x][(int)(obj->env.vec.pos.y - obj->env.vec.dir.y * move_speed)] == 0)
+		obj->env.vec.pos.y -= obj->env.vec.dir.y * move_speed;
 	run_img(obj);
 }
 
@@ -378,12 +378,12 @@ void	rot_right(t_mlx *obj)
 	double	rot_speed;
 
 	rot_speed = obj->env.frame_time * (M_PI * 2);
-	old_dirx = obj->env.dir.x;
-	old_planex = obj->env.plane.x;
-	obj->env.dir.x = obj->env.dir.x * cos(-rot_speed) - obj->env.dir.y * sin(-rot_speed);
-	obj->env.dir.y = old_dirx * sin(-rot_speed) + obj->env.dir.y * cos(-rot_speed);
-	obj->env.plane.x = obj->env.plane.x * cos(-rot_speed) - obj->env.plane.y * sin(-rot_speed);
-	obj->env.plane.y = old_planex * sin(-rot_speed) + obj->env.plane.y * cos(-rot_speed);
+	old_dirx = obj->env.vec.dir.x;
+	old_planex = obj->env.vec.plane.x;
+	obj->env.vec.dir.x = obj->env.vec.dir.x * cos(-rot_speed) - obj->env.vec.dir.y * sin(-rot_speed);
+	obj->env.vec.dir.y = old_dirx * sin(-rot_speed) + obj->env.vec.dir.y * cos(-rot_speed);
+	obj->env.vec.plane.x = obj->env.vec.plane.x * cos(-rot_speed) - obj->env.vec.plane.y * sin(-rot_speed);
+	obj->env.vec.plane.y = old_planex * sin(-rot_speed) + obj->env.vec.plane.y * cos(-rot_speed);
 	run_img(obj);
 }
 
@@ -394,12 +394,12 @@ void	rot_left(t_mlx *obj)
 	double	rot_speed;
 
 	rot_speed = obj->env.frame_time * (M_PI * 2);
-	old_dirx = obj->env.dir.x;
-	old_planex = obj->env.plane.x;
-	obj->env.dir.x = obj->env.dir.x * cos(rot_speed) - obj->env.dir.y * sin(rot_speed);
-	obj->env.dir.y = old_dirx * sin(rot_speed) + obj->env.dir.y * cos(rot_speed);
-	obj->env.plane.x = obj->env.plane.x * cos(rot_speed) - obj->env.plane.y * sin(rot_speed);
-	obj->env.plane.y = old_planex * sin(rot_speed) + obj->env.plane.y * cos(rot_speed);
+	old_dirx = obj->env.vec.dir.x;
+	old_planex = obj->env.vec.plane.x;
+	obj->env.vec.dir.x = obj->env.vec.dir.x * cos(rot_speed) - obj->env.vec.dir.y * sin(rot_speed);
+	obj->env.vec.dir.y = old_dirx * sin(rot_speed) + obj->env.vec.dir.y * cos(rot_speed);
+	obj->env.vec.plane.x = obj->env.vec.plane.x * cos(rot_speed) - obj->env.vec.plane.y * sin(rot_speed);
+	obj->env.vec.plane.y = old_planex * sin(rot_speed) + obj->env.vec.plane.y * cos(rot_speed);
 	run_img(obj);
 }
 
