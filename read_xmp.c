@@ -979,15 +979,19 @@ int		get_texture(t_mlx *obj)
 		return (0);
 	read_xpm(tmp, "Brown0.XPM");
 	store_tex_map(obj, tmp, 0);
-	read_xpm(tmp, "BrownBlood1.XPM");
+	read_xpm(tmp, "Brown1.XPM");
 	store_tex_map(obj, tmp, 1);
-	read_xpm(tmp, "BrownBlood2.XPM");
+	read_xpm(tmp, "BrownBlood0.XPM");
 	store_tex_map(obj, tmp, 2);
-	read_xpm(tmp, "BrownBlood3.XPM");
+	read_xpm(tmp, "BrownBlood1.XPM");
 	store_tex_map(obj, tmp, 3);
-	read_xpm(tmp, "BrownBlood4.XPM");
+	read_xpm(tmp, "BrownBlood2.XPM");
 	store_tex_map(obj, tmp, 4);
-	read_xpm(tmp, "BrownBlood5.XPM");
+	read_xpm(tmp, "BrownBlood3.XPM");
 	store_tex_map(obj, tmp, 5);
+	read_xpm(tmp, "BrownBlood4.XPM");
+	store_tex_map(obj, tmp, 6);
+	read_xpm(tmp, "BrownBlood5.XPM");
+	store_tex_map(obj, tmp, 7);
 	return (1);
 }

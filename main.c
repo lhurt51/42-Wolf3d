@@ -16,14 +16,14 @@ int		worldmap[M_WIDTH][M_HEIGHT] =
 {
 	{4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,7,7,7,7,7,7,7,7},
 	{4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,7},
-	{4,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7},
-	{4,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7},
-	{4,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,7},
-	{4,0,4,0,0,0,0,5,5,5,5,5,5,5,5,5,7,7,0,7,7,7,7,7},
-	{4,0,5,0,0,0,0,5,0,5,0,5,0,5,0,5,7,0,0,0,7,7,7,1},
-	{4,0,6,0,0,0,0,5,0,0,0,0,0,0,0,5,7,0,0,0,0,0,0,8},
-	{4,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,1},
-	{4,0,2,0,0,0,0,5,0,0,0,0,0,0,0,5,7,0,0,0,0,0,0,8},
+	{4,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7},
+	{4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7},
+	{4,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,7},
+	{4,0,0,0,0,0,0,5,5,5,5,5,5,5,5,5,7,7,0,7,7,7,7,7},
+	{4,0,3,0,0,0,0,5,0,5,0,5,0,5,0,5,7,0,0,0,7,7,7,1},
+	{4,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,7,0,0,0,0,0,0,8},
+	{4,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,1},
+	{4,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,7,0,0,0,0,0,0,8},
 	{4,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,7,0,0,0,7,7,7,1},
 	{4,0,0,0,0,0,0,5,5,5,5,0,5,5,5,5,7,7,7,7,7,7,7,1},
 	{6,6,6,6,6,6,6,6,6,6,6,0,6,6,6,6,6,6,6,6,6,6,6,6},
@@ -190,16 +190,15 @@ void	choose_tex(t_mlx *obj, t_intpoint *map, int x)
 {
 	int 	tex_num;
 	int		tex_x;
-	double	wall_x;
 
-	tex_num = (worldmap[map->x][map->y] < 4) ? worldmap[map->x][map->y] - 1 : 0;
+	tex_num = (worldmap[map->x][map->y] < 5) ? worldmap[map->x][map->y] - 1 : 0;
 	if (obj->env.side == 0)
-		wall_x = obj->env.vec.pos.y + obj->env.wall_dist * obj->env.vec.ray_dir.y;
+		obj->env.wall_x = obj->env.vec.pos.y + obj->env.wall_dist * obj->env.vec.ray_dir.y;
 	else
-		wall_x = obj->env.vec.pos.x + obj->env.wall_dist * obj->env.vec.ray_dir.x;
-	wall_x -= floor(wall_x);
+		obj->env.wall_x = obj->env.vec.pos.x + obj->env.wall_dist * obj->env.vec.ray_dir.x;
+	obj->env.wall_x -= floor(obj->env.wall_x);
 
-	tex_x = (int)(wall_x * (double)(T_SIZE));
+	tex_x = (int)(obj->env.wall_x * (double)(T_SIZE));
 	if (obj->env.side == 0 && obj->env.vec.ray_dir.x > 0)
 		tex_x = T_SIZE - tex_x - 1;
 	if (obj->env.side == 1 && obj->env.vec.ray_dir.y < 0)
@@ -211,10 +210,8 @@ void	choose_tex(t_mlx *obj, t_intpoint *map, int x)
 	int y;
 
 	y = obj->env.draw_start;
-	if (tex_num == 1)
-		tex_num += 1;
-	else if (tex_num == 2)
-		tex_num += 2;
+	if (tex_num > 0)
+		tex_num += tex_num;
 	ft_putnbr(tex_num);
 	ft_putchar('\n');
 	while (y < obj->env.draw_end)
@@ -229,56 +226,74 @@ void	choose_tex(t_mlx *obj, t_intpoint *map, int x)
 		y++;
 	}
 }
-//
-// void	init_tex(int x, int y, t_mlx *obj)
-// {
-// 	int	xorcolor;
-// 	int	xcolor;
-// 	int	ycolor;
-// 	int xycolor;
-//
-// 	xorcolor = ((x * 256 / T_SIZE) ^ (y * 256 / T_SIZE));
-// 	xcolor = x * 256 / T_SIZE;
-// 	ycolor = y * 256 / T_SIZE;
-// 	xycolor = y * 128 / T_SIZE + x * 128 / T_SIZE;
-	// obj->env.tex[0][T_SIZE * x + y] = 65536 * 254 * (y != x && y != T_SIZE - x);
-	// obj->env.tex[1][T_SIZE * x + y] = xycolor + 256 * xycolor + 65536 * xycolor;
-	// obj->env.tex[2][T_SIZE * x + y] = 256 * xycolor + 65536 * xycolor;
-	// obj->env.tex[3][T_SIZE * x + y] = xorcolor + 256 * xorcolor + 65536 * xorcolor;
-	// obj->env.tex[4][T_SIZE * x + y] = 256 * xorcolor;
-	// obj->env.tex[5][T_SIZE * x + y] = 65536 * 192 * (y % 16 && x % 16);
-	// obj->env.tex[6][T_SIZE * x + y] = 65536 * ycolor;
-	// obj->env.tex[7][T_SIZE * x + y] = 128 + 256 * 128 + 65536 * 128;
-// }
 
-// void	gen_tex(t_mlx *obj)
-// {
-// 	int		x;
-// 	int		y;
-//
-// 	x = 7;
-// 	while (x >= 0)
-// 		obj->env.tex[x--] = (int*)malloc(sizeof(int*) * (T_SIZE * T_SIZE));
-// 	x = 0;
-// 	while (x < T_SIZE)
-// 	{
-// 		y = 0;
-// 		while (y < T_SIZE)
-// 		{
-// 			init_tex(x, y, obj);
-// 			y++;
-// 		}
-// 		x++;
-// 	}
-// }
+void	draw_floor(t_mlx *obj, t_point *floor_wall, int x)
+{
+	t_point		cur_floor;
+	t_intpoint	floor_tex;
+	double		dist_wall;
+	double		dist_player;
+	double		cur_dist;
+	double		weight;
+	int			color;
+	int			y;
+
+	dist_wall = obj->env.wall_dist;
+	dist_player = 0.0;
+	if (obj->env.draw_end < 0)
+		obj->env.draw_end = W_HEIGHT;
+	y = obj->env.draw_end + 1;
+	while (y < W_HEIGHT)
+	{
+		cur_dist = W_HEIGHT / (2.0 * y - W_HEIGHT);
+		weight = (cur_dist - dist_player) / (dist_wall - dist_player);
+		cur_floor.x = weight * floor_wall->x + (1.0 - weight) * obj->env.vec.pos.x;
+		cur_floor.y = weight * floor_wall->y + (1.0 - weight) * obj->env.vec.pos.y;
+		floor_tex.x = (int)(cur_floor.x * T_SIZE) % T_SIZE;
+		floor_tex.y = (int)(cur_floor.y * T_SIZE) % T_SIZE;
+		color = obj->env.tex[0][floor_tex.y][floor_tex.x];
+		if ((x < W_WIDTH && x > 0) && (y < W_HEIGHT && y > 0))
+			pixel_to_img(obj, x, y, color);
+		color = obj->env.tex[1][floor_tex.y][floor_tex.x];
+		if ((x < W_WIDTH && x > 0) && (W_HEIGHT - y < W_HEIGHT && W_HEIGHT - y > 0))
+			pixel_to_img(obj, x, W_HEIGHT - y, color);
+		y++;
+	}
+}
+
+
+void	floor_casting(t_mlx *obj, t_intpoint *map, int x)
+{
+	t_point		floor_wall;
+
+	if (obj->env.side == 0 && obj->env.vec.ray_dir.x > 0)
+	{
+		floor_wall.x = map->x;
+		floor_wall.y = map->y + obj->env.wall_x;
+	}
+	else if (obj->env.side == 0 && obj->env.vec.ray_dir.x < 0)
+	{
+		floor_wall.x = map->x + 1.0;
+		floor_wall.y = map->y + obj->env.wall_x;
+	}
+	else if (obj->env.side == 1 && obj->env.vec.ray_dir.y > 0)
+	{
+		floor_wall.x = map->x + obj->env.wall_x;
+		floor_wall.y = map->y;
+	}
+	else
+	{
+		floor_wall.x = map->x + obj->env.wall_x;
+		floor_wall.y = map->y + 1.0;
+	}
+	draw_floor(obj, &floor_wall, x);
+}
 
 void	init_rays(t_mlx *obj)
 {
 	int 		x;
 	t_point		side_dist;
 	t_intpoint	map;
-	// t_intpoint	p1;
-	// t_intpoint	p2;
 
 	x = W_WIDTH;
 	while (x > 0)
@@ -288,12 +303,7 @@ void	init_rays(t_mlx *obj)
 		exe_dda(obj, &map, &side_dist);
 		find_draw_pnts(obj, &map);
 		choose_tex(obj, &map, x);
-		// choose_color(obj, &map);
-		// p1.x = x;
-		// p2.x = x;
-		// p1.y = obj->env.draw_start;
-		// p2.y = obj->env.draw_end;
-		// get_da(obj, &p1, &p2);
+		floor_casting(obj, &map, x);
 		x--;
 	}
 }

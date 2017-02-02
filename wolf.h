@@ -87,11 +87,12 @@ typedef struct		s_vec
 
 typedef struct		s_env
 {
-	int				**tex[6];
+	int				**tex[8];
 	t_vec			vec;
 	double			frame_time; //time of the frame
 	double			cur_time;
 	double			wall_dist;
+	double			wall_x;
 	int				line_h;
 	int				side; //was a NS or a EW wall hit?
 	int				draw_start;
