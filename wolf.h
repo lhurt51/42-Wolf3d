@@ -33,6 +33,7 @@
 # define CH_LEN 15
 # define CH_WID 1
 # define CH_OFF 2
+# define CH_COLOR 0xFFFFFF
 # define Y_ORIGIN (W_HEIGHT / 2)
 # define X_ORIGIN (W_WIDTH / 2)
 # define CAMERA_X(x) (2 * x / (double)(W_WIDTH) - 1) //x-coordinate in camera space
@@ -49,6 +50,23 @@ typedef struct		s_intpoint
 	int				x;
 	int				y;
 }					t_intpoint;
+
+typedef struct		s_color
+{
+	char			*def;
+	int				color;
+}					t_color;
+
+typedef struct		s_tex
+{
+	t_color			*color;
+	char			*name;
+	int				height;
+	int				width;
+	unsigned int	num_color;
+	int				pix_w;
+	int				pnts[T_SIZE][T_SIZE];
+}					t_tex;
 
 typedef struct		s_line
 {
@@ -69,7 +87,7 @@ typedef struct		s_vec
 
 typedef struct		s_env
 {
-	int				*tex[8];
+	int				**tex[6];
 	t_vec			vec;
 	double			frame_time; //time of the frame
 	double			cur_time;
@@ -97,5 +115,6 @@ void			*error(char *msg);
 unsigned int	count_ord(char *av);
 void			pixel_to_img(t_mlx *new, int x, int y, int color);
 void			get_da(t_mlx *lst, t_intpoint *point1, t_intpoint *point2);
+int				get_texture(t_mlx *obj);
 
 #endif
