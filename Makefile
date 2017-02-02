@@ -38,6 +38,7 @@ NAME =		wolf3d
 
 SRCS =		$(LIBFT)/libft.a \
 			main.c	\
+			read_xpm.c \
 			line_algo.c \
 			tools.c \
 

@@ -186,13 +186,13 @@ void	choose_color(t_mlx *obj, t_intpoint *map)
 	obj->env.color = color;
 }
 
-void	choose_tex(t_mlx *obj, t_intpoint *map, int **tex, int x)
+void	choose_tex(t_mlx *obj, t_intpoint *map, int x)
 {
 	int 	tex_num;
 	int		tex_x;
 	double	wall_x;
 
-	tex_num = worldmap[map->x][map->y] - 1;
+	tex_num = (worldmap[map->x][map->y] < 6) ? worldmap[map->x][map->y] - 1 : 0;
 	if (obj->env.side == 0)
 		wall_x = obj->env.vec.pos.y + obj->env.wall_dist * obj->env.vec.ray_dir.y;
 	else
@@ -202,7 +202,7 @@ void	choose_tex(t_mlx *obj, t_intpoint *map, int **tex, int x)
 	tex_x = (int)(wall_x * (double)(T_SIZE));
 	if (obj->env.side == 0 && obj->env.vec.ray_dir.x > 0)
 		tex_x = T_SIZE - tex_x - 1;
-	if (obj->env.side == 0 && obj->env.vec.ray_dir.y < 0)
+	if (obj->env.side == 1 && obj->env.vec.ray_dir.y < 0)
 		tex_x = T_SIZE - tex_x - 1;
 
 	int ran;
@@ -215,7 +215,7 @@ void	choose_tex(t_mlx *obj, t_intpoint *map, int **tex, int x)
 	{
 		ran = y * 256 - W_HEIGHT * 128 + obj->env.line_h * 128;
 		tex_y = ((ran * T_SIZE) / obj->env.line_h) / 256;
-		color = tex[tex_num][T_SIZE * tex_x + tex_y];
+		color = obj->env.tex[tex_num][tex_y][tex_x];
 		if (obj->env.side == 1)
 			color = (color >> 1) & 8355711;
 		if ((x < W_WIDTH && x > 0) && (y < W_HEIGHT && y > 0))
@@ -223,50 +223,50 @@ void	choose_tex(t_mlx *obj, t_intpoint *map, int **tex, int x)
 		y++;
 	}
 }
+//
+// void	init_tex(int x, int y, t_mlx *obj)
+// {
+// 	int	xorcolor;
+// 	int	xcolor;
+// 	int	ycolor;
+// 	int xycolor;
+//
+// 	xorcolor = ((x * 256 / T_SIZE) ^ (y * 256 / T_SIZE));
+// 	xcolor = x * 256 / T_SIZE;
+// 	ycolor = y * 256 / T_SIZE;
+// 	xycolor = y * 128 / T_SIZE + x * 128 / T_SIZE;
+	// obj->env.tex[0][T_SIZE * x + y] = 65536 * 254 * (y != x && y != T_SIZE - x);
+	// obj->env.tex[1][T_SIZE * x + y] = xycolor + 256 * xycolor + 65536 * xycolor;
+	// obj->env.tex[2][T_SIZE * x + y] = 256 * xycolor + 65536 * xycolor;
+	// obj->env.tex[3][T_SIZE * x + y] = xorcolor + 256 * xorcolor + 65536 * xorcolor;
+	// obj->env.tex[4][T_SIZE * x + y] = 256 * xorcolor;
+	// obj->env.tex[5][T_SIZE * x + y] = 65536 * 192 * (y % 16 && x % 16);
+	// obj->env.tex[6][T_SIZE * x + y] = 65536 * ycolor;
+	// obj->env.tex[7][T_SIZE * x + y] = 128 + 256 * 128 + 65536 * 128;
+// }
 
-void	init_tex(int x, int y, t_mlx *obj)
-{
-	int	xorcolor;
-	int	xcolor;
-	int	ycolor;
-	int xycolor;
+// void	gen_tex(t_mlx *obj)
+// {
+// 	int		x;
+// 	int		y;
+//
+// 	x = 7;
+// 	while (x >= 0)
+// 		obj->env.tex[x--] = (int*)malloc(sizeof(int*) * (T_SIZE * T_SIZE));
+// 	x = 0;
+// 	while (x < T_SIZE)
+// 	{
+// 		y = 0;
+// 		while (y < T_SIZE)
+// 		{
+// 			init_tex(x, y, obj);
+// 			y++;
+// 		}
+// 		x++;
+// 	}
+// }
 
-	xorcolor = ((x * 256 / T_SIZE) ^ (y * 256 / T_SIZE));
-	xcolor = x * 256 / T_SIZE;
-	ycolor = y * 256 / T_SIZE;
-	xycolor = y * 128 / T_SIZE + x * 128 / T_SIZE;
-	obj->env.tex[0][T_SIZE * x + y] = 65536 * 254 * (y != x && y != T_SIZE - x);
-	obj->env.tex[1][T_SIZE * x + y] = xycolor + 256 * xycolor + 65536 * xycolor;
-	obj->env.tex[2][T_SIZE * x + y] = 256 * xycolor + 65536 * xycolor;
-	obj->env.tex[3][T_SIZE * x + y] = xorcolor + 256 * xorcolor + 65536 * xorcolor;
-	obj->env.tex[4][T_SIZE * x + y] = 256 * xorcolor;
-	obj->env.tex[5][T_SIZE * x + y] = 65536 * 192 * (y % 16 && x % 16);
-	obj->env.tex[6][T_SIZE * x + y] = 65536 * ycolor;
-	obj->env.tex[7][T_SIZE * x + y] = 128 + 256 * 128 + 65536 * 128;
-}
-
-void	gen_tex(t_mlx *obj)
-{
-	int		x;
-	int		y;
-
-	x = 7;
-	while (x >= 0)
-		obj->env.tex[x--] = (int*)malloc(sizeof(int*) * (T_SIZE * T_SIZE));
-	x = 0;
-	while (x < T_SIZE)
-	{
-		y = 0;
-		while (y < T_SIZE)
-		{
-			init_tex(x, y, obj);
-			y++;
-		}
-		x++;
-	}
-}
-
-void	init_rays(t_mlx *obj, int **tex)
+void	init_rays(t_mlx *obj)
 {
 	int 		x;
 	t_point		side_dist;
@@ -281,7 +281,7 @@ void	init_rays(t_mlx *obj, int **tex)
 		find_dir_step(obj, &map, &side_dist);
 		exe_dda(obj, &map, &side_dist);
 		find_draw_pnts(obj, &map);
-		choose_tex(obj, &map, tex, x);
+		choose_tex(obj, &map, x);
 		// choose_color(obj, &map);
 		// p1.x = x;
 		// p2.x = x;
@@ -315,7 +315,7 @@ void	draw_crosshair(t_mlx *obj)
 		while (y <= Y_ORIGIN + CH_WID)
 		{
 			if (x > X_ORIGIN + CH_OFF || x < X_ORIGIN - CH_OFF)
-				mlx_pixel_put(obj->mlx, obj->win, x, y, 0xFFFFFF);
+				mlx_pixel_put(obj->mlx, obj->win, x, y, CH_COLOR);
 			y++;
 		}
 		x++;
@@ -327,7 +327,7 @@ void	draw_crosshair(t_mlx *obj)
 		while (x <= X_ORIGIN + CH_WID)
 		{
 			if (y > Y_ORIGIN + CH_OFF || y < Y_ORIGIN - CH_OFF)
-				mlx_pixel_put(obj->mlx, obj->win, x, y, 0xFFFFFF);
+				mlx_pixel_put(obj->mlx, obj->win, x, y, CH_COLOR);
 			x++;
 		}
 		y++;
@@ -341,7 +341,7 @@ void	run_img(t_mlx *obj)
 	obj->data = mlx_get_data_addr(obj->img, &obj->bits, &obj->size_line,
 		&obj->endian);
 	obj->env.cur_time = get_time();
-	init_rays(obj, obj->env.tex);
+	init_rays(obj);
 	mlx_put_image_to_window(obj->mlx, obj->win, obj->img, 0, 0);
 	get_fps(obj);
 	draw_crosshair(obj);
@@ -425,7 +425,8 @@ void	run_win(t_mlx *obj)
 	obj->win = mlx_new_window(obj->mlx, W_WIDTH, W_HEIGHT, "Wolf3D");
 	obj->img = mlx_new_image(obj->mlx, W_WIDTH, W_HEIGHT);
 	reset_struct(obj);
-	gen_tex(obj);
+	// gen_tex(obj);
+	get_texture(obj);
 	run_img(obj);
 	// mlx_mouse_hook(obj->win, my_mouse_func, obj);
 	// mlx_hook(obj->win, 6, 0, my_mouse_movement, obj);
