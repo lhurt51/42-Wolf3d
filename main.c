@@ -16,14 +16,14 @@ int		worldmap[M_WIDTH][M_HEIGHT] =
 {
 	{4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,7,7,7,7,7,7,7,7},
 	{4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,7},
-	{4,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7},
+	{4,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7},
 	{4,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7},
 	{4,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,7},
 	{4,0,4,0,0,0,0,5,5,5,5,5,5,5,5,5,7,7,0,7,7,7,7,7},
 	{4,0,5,0,0,0,0,5,0,5,0,5,0,5,0,5,7,0,0,0,7,7,7,1},
 	{4,0,6,0,0,0,0,5,0,0,0,0,0,0,0,5,7,0,0,0,0,0,0,8},
 	{4,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,1},
-	{4,0,8,0,0,0,0,5,0,0,0,0,0,0,0,5,7,0,0,0,0,0,0,8},
+	{4,0,2,0,0,0,0,5,0,0,0,0,0,0,0,5,7,0,0,0,0,0,0,8},
 	{4,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,7,0,0,0,7,7,7,1},
 	{4,0,0,0,0,0,0,5,5,5,5,0,5,5,5,5,7,7,7,7,7,7,7,1},
 	{6,6,6,6,6,6,6,6,6,6,6,0,6,6,6,6,6,6,6,6,6,6,6,6},
@@ -128,7 +128,7 @@ void	find_draw_pnts(t_mlx *obj, t_intpoint *map)
 		obj->env.wall_dist = (map->x - obj->env.vec.pos.x + (1 - obj->env.vec.step.x) / 2) / obj->env.vec.ray_dir.x;
 	else
 		obj->env.wall_dist = (map->y - obj->env.vec.pos.y + (1 - obj->env.vec.step.y) / 2) / obj->env.vec.ray_dir.y;
-	obj->env.line_h = (int)(W_HEIGHT * 2 / obj->env.wall_dist);
+	obj->env.line_h = (int)(W_HEIGHT * 1 / obj->env.wall_dist);
 	//calculate lowest and highest pixel to fill in current stripe
 	obj->env.draw_start = -obj->env.line_h / 2 + W_HEIGHT / 2;
 	if(obj->env.draw_start < 0)
@@ -192,7 +192,7 @@ void	choose_tex(t_mlx *obj, t_intpoint *map, int x)
 	int		tex_x;
 	double	wall_x;
 
-	tex_num = (worldmap[map->x][map->y] < 6) ? worldmap[map->x][map->y] - 1 : 0;
+	tex_num = (worldmap[map->x][map->y] < 4) ? worldmap[map->x][map->y] - 1 : 0;
 	if (obj->env.side == 0)
 		wall_x = obj->env.vec.pos.y + obj->env.wall_dist * obj->env.vec.ray_dir.y;
 	else
@@ -211,13 +211,19 @@ void	choose_tex(t_mlx *obj, t_intpoint *map, int x)
 	int y;
 
 	y = obj->env.draw_start;
+	if (tex_num == 1)
+		tex_num += 1;
+	else if (tex_num == 2)
+		tex_num += 2;
+	ft_putnbr(tex_num);
+	ft_putchar('\n');
 	while (y < obj->env.draw_end)
 	{
 		ran = y * 256 - W_HEIGHT * 128 + obj->env.line_h * 128;
 		tex_y = ((ran * T_SIZE) / obj->env.line_h) / 256;
 		color = obj->env.tex[tex_num][tex_y][tex_x];
 		if (obj->env.side == 1)
-			color = (color >> 1) & 8355711;
+			color = obj->env.tex[tex_num + 1][tex_y][tex_x];
 		if ((x < W_WIDTH && x > 0) && (y < W_HEIGHT && y > 0))
 			pixel_to_img(obj, x, y, color);
 		y++;
