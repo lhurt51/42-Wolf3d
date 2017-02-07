@@ -87,7 +87,7 @@ typedef struct		s_vec
 
 typedef struct		s_env
 {
-	int				**tex[8];
+	int				**tex[23];
 	t_vec			vec;
 	double			frame_time; //time of the frame
 	double			cur_time;

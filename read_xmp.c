@@ -922,10 +922,10 @@ int		check_errors(t_tex *tmp)
 {
 	if (!tmp)
 		return ((int)error("Malloc failed"));
-	if (!count_ord("Brown0.XPM"))
+	if (!count_ord("XMP_textures/walls/Brown0.XPM"))
 		return ((int)error("Couldn't open file"));
-	// if (!count_ord("BrownBlood1.XPM"))
-	// 	return ((int)error("Couldn't open file"));
+	else if (!count_ord("XMP_textures/walls/Brown1.XPM"))
+		return ((int)error("Couldn't open file"));
 	// if (!count_ord("BrownBlood2.XPM"))
 	// 	return ((int)error("Couldn't open file"));
 	// if (!count_ord("BrownBlood3.XPM"))
@@ -977,21 +977,51 @@ int		get_texture(t_mlx *obj)
 	tmp = malloc(sizeof(t_tex));
 	if (!check_errors(tmp))
 		return (0);
-	read_xpm(tmp, "Brown0.XPM");
+	read_xpm(tmp, "XMP_textures/walls/Brown0.XPM"); // srand(time(NULL)); int i = ran() % 8;
 	store_tex_map(obj, tmp, 0);
-	read_xpm(tmp, "Brown1.XPM");
+	read_xpm(tmp, "XMP_textures/walls/Brown1.XPM");
 	store_tex_map(obj, tmp, 1);
-	read_xpm(tmp, "BrownBlood0.XPM");
+	read_xpm(tmp, "XMP_textures/walls/BrownBlood0.XPM");
 	store_tex_map(obj, tmp, 2);
-	read_xpm(tmp, "BrownBlood1.XPM");
+	read_xpm(tmp, "XMP_textures/walls/BrownBlood1.XPM");
 	store_tex_map(obj, tmp, 3);
-	read_xpm(tmp, "BrownBlood2.XPM");
+	read_xpm(tmp, "XMP_textures/walls/BrownBlood2.XPM");
 	store_tex_map(obj, tmp, 4);
-	read_xpm(tmp, "BrownBlood3.XPM");
+	read_xpm(tmp, "XMP_textures/walls/BrownBlood3.XPM");
 	store_tex_map(obj, tmp, 5);
-	read_xpm(tmp, "BrownBlood4.XPM");
+	read_xpm(tmp, "XMP_textures/walls/BrownBlood4.XPM");
 	store_tex_map(obj, tmp, 6);
-	read_xpm(tmp, "BrownBlood5.XPM");
-	store_tex_map(obj, tmp, 7);
+	read_xpm(tmp, "XMP_textures/walls/BrownBlood5.XPM");
+	store_tex_map(obj, tmp, 7); // 1 - 7 are random floors
+	read_xpm(tmp, "XMP_textures/walls/RedBricks0.XPM"); // (i - 7 % 2 == 0) ? side #1 = tex[1 + type] : tex[0 + type]
+	store_tex_map(obj, tmp, 8);
+	read_xpm(tmp, "XMP_textures/walls/RedBricks1.XPM");
+	store_tex_map(obj, tmp, 9);
+	read_xpm(tmp, "XMP_textures/walls/RedBricks0.XPM");
+	store_tex_map(obj, tmp, 10);
+	read_xpm(tmp, "XMP_textures/walls/RedBricks1.XPM");
+	store_tex_map(obj, tmp, 11);
+	read_xpm(tmp, "XMP_textures/walls/RedBricksPlanet0.XPM");
+	store_tex_map(obj, tmp, 12);
+	read_xpm(tmp, "XMP_textures/walls/RedBricksPlanet1.XPM");
+	store_tex_map(obj, tmp, 13);
+	read_xpm(tmp, "XMP_textures/walls/RedBricksSign0.XPM");
+	store_tex_map(obj, tmp, 14);
+	read_xpm(tmp, "XMP_textures/walls/RedBricksSign1.XPM");
+	store_tex_map(obj, tmp, 15); // 8 - 13 are red brick walls
+	read_xpm(tmp, "XMP_textures/walls/GreenWall0.XPM");
+	store_tex_map(obj, tmp, 16);
+	read_xpm(tmp, "XMP_textures/walls/GreenWall1.XPM");
+	store_tex_map(obj, tmp, 17);
+	read_xpm(tmp, "XMP_textures/walls/GreenWallWithShield0.XPM");
+	store_tex_map(obj, tmp, 18);
+	read_xpm(tmp, "XMP_textures/walls/GreenWallWithShield1.XPM");
+	store_tex_map(obj, tmp, 19); // 14 - 17 are green walls
+    read_xpm(tmp, "XMP_textures/walls/StoneBounty0.XPM");
+	store_tex_map(obj, tmp, 20);
+	read_xpm(tmp, "XMP_textures/walls/StoneBounty1.XPM");
+	store_tex_map(obj, tmp, 21); // 18 - 19 are bounty walls
+	read_xpm(tmp, "XMP_textures/walls/WoodenWall1.XPM");
+	store_tex_map(obj, tmp, 22); // 22 celling
 	return (1);
 }
