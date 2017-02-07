@@ -830,8 +830,10 @@ void	store_color(t_tex *obj, char *str, int i, int j)
 	if (str[j] != '#' && in == 0)
 		return (find_xt_color(obj, &str[j], i));
 	while (str[j++])
+	{
 		if ((ft_isdigit(str[j]) || ft_isupper(str[j])) && in < 6)
 			tmp[in++] = str[j];
+	}
 	tmp[in] = '\0';
 	obj->color[i].color = charhextoint(tmp, ft_strlen(tmp) - 1);
 }
