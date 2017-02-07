@@ -875,16 +875,16 @@ void	fill_board(t_tex *obj, char *str, int *row)
 	ft_strdel(&tmp);
 }
 
-int		read_xpm(t_tex *obj, char *av)
+int		read_xpm(t_tex *obj, char *av, unsigned i)
 {
 	int				fd;
-	unsigned int	i;
 	int				y;
 	char			*tmp;
 
-	i = 0;
 	y = -1;
 	fd = open(av, O_RDONLY);
+	if (fd < 0)
+		return ((int)error(ft_strjoin("Can't open file", av)));
 	while (get_next_line(fd, &tmp))
 	{
 		tmp = ft_strtrim(tmp, ',');
@@ -900,20 +900,7 @@ int		read_xpm(t_tex *obj, char *av)
 	}
 	close(fd);
 	if (obj->height != T_SIZE || obj->width != T_SIZE)
-		return ((int)error("XPM wronge size"));
-	return (1);
-}
-
-int		check_errors(t_tex *tmp, char **files)
-{
-	int		i;
-
-	i = NUM_FILES;
-	if (!tmp)
-		return ((int)error("Malloc failed"));
-	while (--i >= 0)
-		if (!count_ord(files[i]))
-			return (0);
+		return ((int)error(ft_strjoin("XPM wronge size" , av)));
 	return (1);
 }
 
@@ -983,12 +970,12 @@ int		get_texture(t_mlx *obj)
 
 		i = NUM_FILES;
 		tmp = malloc(sizeof(t_tex));
+		if (!tmp)
+			return ((int)error("Malloc failed"));
 		files = file_names();
-		if (!check_errors(tmp, files))
-			return (0);
 		while (--i >= 0)
 		{
-			if (!read_xpm(tmp, files[i]))
+			if (!read_xpm(tmp, files[i], 0))
 				return (0);
 			store_tex_map(obj, tmp, i);
 		}

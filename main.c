@@ -154,6 +154,7 @@ void	get_fps(t_mlx *obj)
 	tmp = ft_itoa((int)1.0 / obj->env.frame_time);
 	print = ft_strjoin(print, tmp);
 	mlx_string_put(obj->mlx, obj->win, 0, 0, 0xFFFFFF, print);
+	ft_strdel(&print);
 }
 
 void	choose_color(t_mlx *obj, t_intpoint *map)
@@ -361,7 +362,7 @@ void	move_up(t_mlx *obj)
 {
 	double	move_speed;
 
-	move_speed = obj->env.frame_time * 20.0;
+	move_speed = obj->env.frame_time * 15.0;
 	if(worldmap[(int)(obj->env.vec.pos.x + obj->env.vec.dir.x * move_speed)][(int)obj->env.vec.pos.y] == 0)
 		obj->env.vec.pos.x += obj->env.vec.dir.x * move_speed;
 	if(worldmap[(int)obj->env.vec.pos.x][(int)(obj->env.vec.pos.y + obj->env.vec.dir.y * move_speed)] == 0)
@@ -372,7 +373,7 @@ void	move_down(t_mlx *obj)
 {
 	double	move_speed;
 
-	move_speed = obj->env.frame_time * 20.0;
+	move_speed = obj->env.frame_time * 15.0;
 	if(worldmap[(int)(obj->env.vec.pos.x - obj->env.vec.dir.x * move_speed)][(int)obj->env.vec.pos.y] == 0)
 		obj->env.vec.pos.x -= obj->env.vec.dir.x * move_speed;
 	if(worldmap[(int)obj->env.vec.pos.x][(int)(obj->env.vec.pos.y - obj->env.vec.dir.y * move_speed)] == 0)
@@ -385,7 +386,7 @@ void	rot_right(t_mlx *obj)
 	double	old_planex;
 	double	rot_speed;
 
-	rot_speed = obj->env.frame_time * (M_PI * 2);
+	rot_speed = obj->env.frame_time * (M_PI * 1.5);
 	old_dirx = obj->env.vec.dir.x;
 	old_planex = obj->env.vec.plane.x;
 	obj->env.vec.dir.x = obj->env.vec.dir.x * cos(-rot_speed) - obj->env.vec.dir.y * sin(-rot_speed);
@@ -400,7 +401,7 @@ void	rot_left(t_mlx *obj)
 	double	old_planex;
 	double	rot_speed;
 
-	rot_speed = obj->env.frame_time * (M_PI * 2);
+	rot_speed = obj->env.frame_time * (M_PI * 1.5);
 	old_dirx = obj->env.vec.dir.x;
 	old_planex = obj->env.vec.plane.x;
 	obj->env.vec.dir.x = obj->env.vec.dir.x * cos(rot_speed) - obj->env.vec.dir.y * sin(rot_speed);
@@ -450,7 +451,8 @@ int		main()
 	if(!obj)
 		return ((int)error("Malloc failed"));
 	reset_struct(obj);
-	get_texture(obj);
+	if (!get_texture(obj))
+		return (0);
 	run_win(obj);
 	free(obj);
 	return(0);
