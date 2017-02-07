@@ -434,7 +434,6 @@ void	run_win(t_mlx *obj)
 	obj->img = mlx_new_image(obj->mlx, W_WIDTH, W_HEIGHT);
 	obj->data = mlx_get_data_addr(obj->img, &obj->bits, &obj->size_line,
 		&obj->endian);
-	// run_img(obj);
 	// mlx_mouse_hook(obj->win, my_mouse_func, obj);
 	// mlx_hook(obj->win, 6, 0, my_mouse_movement, obj);
 	mlx_hook(obj->win, 2, 0, my_key_press, obj);
