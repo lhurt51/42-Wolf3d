@@ -31,6 +31,7 @@
 # define W_WIDTH 1280
 # define NUM_FILES 23
 # define T_SIZE 64
+# define MOVE_BUFF (X_ORIGIN / 8)
 # define CH_LEN 15
 # define CH_WID 1
 # define CH_OFF 2

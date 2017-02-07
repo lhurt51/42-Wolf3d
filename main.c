@@ -362,7 +362,7 @@ void	move_up(t_mlx *obj)
 {
 	double	move_speed;
 
-	move_speed = obj->env.frame_time * 15.0;
+	move_speed = obj->env.frame_time * 10.0;
 	if(worldmap[(int)(obj->env.vec.pos.x + obj->env.vec.dir.x * move_speed)][(int)obj->env.vec.pos.y] == 0)
 		obj->env.vec.pos.x += obj->env.vec.dir.x * move_speed;
 	if(worldmap[(int)obj->env.vec.pos.x][(int)(obj->env.vec.pos.y + obj->env.vec.dir.y * move_speed)] == 0)
@@ -373,20 +373,42 @@ void	move_down(t_mlx *obj)
 {
 	double	move_speed;
 
-	move_speed = obj->env.frame_time * 15.0;
+	move_speed = obj->env.frame_time * 10.0;
 	if(worldmap[(int)(obj->env.vec.pos.x - obj->env.vec.dir.x * move_speed)][(int)obj->env.vec.pos.y] == 0)
 		obj->env.vec.pos.x -= obj->env.vec.dir.x * move_speed;
 	if(worldmap[(int)obj->env.vec.pos.x][(int)(obj->env.vec.pos.y - obj->env.vec.dir.y * move_speed)] == 0)
 		obj->env.vec.pos.y -= obj->env.vec.dir.y * move_speed;
 }
 
-void	rot_right(t_mlx *obj)
+void	move_right(t_mlx *obj)
+{
+	double	move_speed;
+
+	move_speed = obj->env.frame_time * 12.5;
+	if(worldmap[(int)(obj->env.vec.pos.x + obj->env.vec.plane.x * move_speed)][(int)obj->env.vec.pos.y] == 0)
+		obj->env.vec.pos.x += obj->env.vec.plane.x * move_speed;
+	if(worldmap[(int)obj->env.vec.pos.x][(int)(obj->env.vec.pos.y + obj->env.vec.plane.y * move_speed)] == 0)
+		obj->env.vec.pos.y += obj->env.vec.plane.y * move_speed;
+}
+
+void	move_left(t_mlx *obj)
+{
+	double	move_speed;
+
+	move_speed = obj->env.frame_time * 12.5;
+	if(worldmap[(int)(obj->env.vec.pos.x - obj->env.vec.plane.x * move_speed)][(int)obj->env.vec.pos.y] == 0)
+		obj->env.vec.pos.x -= obj->env.vec.plane.x * move_speed;
+	if(worldmap[(int)obj->env.vec.pos.x][(int)(obj->env.vec.pos.y - obj->env.vec.plane.y * move_speed)] == 0)
+		obj->env.vec.pos.y -= obj->env.vec.plane.y * move_speed;
+}
+
+void	rot_right(t_mlx *obj, double off)
 {
 	double	old_dirx;
 	double	old_planex;
 	double	rot_speed;
 
-	rot_speed = obj->env.frame_time * (M_PI * 1.5);
+	rot_speed = obj->env.frame_time * (M_PI * (0.125 + off));
 	old_dirx = obj->env.vec.dir.x;
 	old_planex = obj->env.vec.plane.x;
 	obj->env.vec.dir.x = obj->env.vec.dir.x * cos(-rot_speed) - obj->env.vec.dir.y * sin(-rot_speed);
@@ -395,13 +417,13 @@ void	rot_right(t_mlx *obj)
 	obj->env.vec.plane.y = old_planex * sin(-rot_speed) + obj->env.vec.plane.y * cos(-rot_speed);
 }
 
-void	rot_left(t_mlx *obj)
+void	rot_left(t_mlx *obj, double off)
 {
 	double	old_dirx;
 	double	old_planex;
 	double	rot_speed;
 
-	rot_speed = obj->env.frame_time * (M_PI * 1.5);
+	rot_speed = obj->env.frame_time * (M_PI * (0.125 + off));
 	old_dirx = obj->env.vec.dir.x;
 	old_planex = obj->env.vec.plane.x;
 	obj->env.vec.dir.x = obj->env.vec.dir.x * cos(rot_speed) - obj->env.vec.dir.y * sin(rot_speed);
@@ -410,17 +432,35 @@ void	rot_left(t_mlx *obj)
 	obj->env.vec.plane.y = old_planex * sin(rot_speed) + obj->env.vec.plane.y * cos(rot_speed);
 }
 
+int		my_mouse_movement(int x, int y, t_mlx *obj)
+{
+	double	off;
+
+	y = 0;
+	if (x > X_ORIGIN + MOVE_BUFF)
+	{
+		off = fabs((double)((x - (X_ORIGIN + MOVE_BUFF)) / 1000) * 1.75);
+		rot_right(obj, off);
+	}
+	else if (x < X_ORIGIN - MOVE_BUFF)
+	{
+		off = fabs((double)((x - (X_ORIGIN - MOVE_BUFF)) / 1000) * 1.75);
+		rot_left(obj, off);
+	}
+	return (0);
+}
+
 int		my_key_press(int keycode, t_mlx *obj)
 {
 	// printf("Keycode: %d\n", keycode);
 	if (keycode == 53)
 		exit_hook(obj);
 	else if (keycode == 0)
-		rot_left(obj);
+		move_left(obj);
 	else if (keycode == 1)
 		move_down(obj);
 	else if(keycode == 2)
-		rot_right(obj);
+		move_right(obj);
 	else if (keycode == 13)
 		move_up(obj);
 	return (0);
@@ -436,7 +476,7 @@ void	run_win(t_mlx *obj)
 	obj->data = mlx_get_data_addr(obj->img, &obj->bits, &obj->size_line,
 		&obj->endian);
 	// mlx_mouse_hook(obj->win, my_mouse_func, obj);
-	// mlx_hook(obj->win, 6, 0, my_mouse_movement, obj);
+	mlx_hook(obj->win, 6, 0, my_mouse_movement, obj);
 	mlx_hook(obj->win, 2, 0, my_key_press, obj);
 	mlx_hook(obj->win, 17, 0, exit_hook, obj);
 	mlx_loop_hook(obj->mlx, run_img, obj);
