@@ -212,8 +212,6 @@ void	choose_tex(t_mlx *obj, t_intpoint *map, int x)
 	y = obj->env.draw_start;
 	if (tex_num > 0)
 		tex_num += tex_num;
-	ft_putnbr(tex_num);
-	ft_putchar('\n');
 	while (y < obj->env.draw_end)
 	{
 		ran = y * 256 - W_HEIGHT * 128 + obj->env.line_h * 128;
@@ -316,51 +314,47 @@ void	reset_struct(t_mlx *obj)
 	obj->env.vec.dir.y = 0.0;
 	obj->env.vec.plane.x = 0.0;
 	obj->env.vec.plane.y = 0.66;
-	obj->env.cur_time = 0.0;
 }
 
-void	draw_crosshair(t_mlx *obj)
+void		draw_crosshair(t_mlx *obj)
 {
 	int	x;
 	int	y;
 
-	x = X_ORIGIN - CH_LEN;
-	while (x <= X_ORIGIN + CH_LEN)
+	x = X_ORIGIN + CH_LEN;
+	while (x >= X_ORIGIN - CH_LEN)
 	{
-		y = Y_ORIGIN - CH_WID;
-		while (y <= Y_ORIGIN + CH_WID)
+		y = Y_ORIGIN + CH_WID;
+		while (y >= Y_ORIGIN - CH_WID)
 		{
 			if (x > X_ORIGIN + CH_OFF || x < X_ORIGIN - CH_OFF)
 				mlx_pixel_put(obj->mlx, obj->win, x, y, CH_COLOR);
-			y++;
+			y--;
 		}
-		x++;
+		x--;
 	}
-	y = Y_ORIGIN - CH_LEN;
-	while (y <= Y_ORIGIN + CH_LEN)
+	y = Y_ORIGIN + CH_LEN;
+	while (y >= Y_ORIGIN - CH_LEN)
 	{
-		x = X_ORIGIN - CH_WID;
-		while (x <= X_ORIGIN + CH_WID)
+		x = X_ORIGIN + CH_WID;
+		while (x >= X_ORIGIN - CH_WID)
 		{
 			if (y > Y_ORIGIN + CH_OFF || y < Y_ORIGIN - CH_OFF)
 				mlx_pixel_put(obj->mlx, obj->win, x, y, CH_COLOR);
-			x++;
+			x--;
 		}
-		y++;
+		y--;
 	}
 }
 
-void	run_img(t_mlx *obj)
+int		run_img(t_mlx *obj)
 {
-	mlx_destroy_image(obj->mlx, obj->img);
-	obj->img = mlx_new_image(obj->mlx, W_WIDTH, W_HEIGHT);
-	obj->data = mlx_get_data_addr(obj->img, &obj->bits, &obj->size_line,
-		&obj->endian);
 	obj->env.cur_time = get_time();
 	init_rays(obj);
 	mlx_put_image_to_window(obj->mlx, obj->win, obj->img, 0, 0);
 	get_fps(obj);
 	draw_crosshair(obj);
+	return (0);
 }
 
 void	move_up(t_mlx *obj)
@@ -372,7 +366,6 @@ void	move_up(t_mlx *obj)
 		obj->env.vec.pos.x += obj->env.vec.dir.x * move_speed;
 	if(worldmap[(int)obj->env.vec.pos.x][(int)(obj->env.vec.pos.y + obj->env.vec.dir.y * move_speed)] == 0)
 		obj->env.vec.pos.y += obj->env.vec.dir.y * move_speed;
-	run_img(obj);
 }
 
 void	move_down(t_mlx *obj)
@@ -384,7 +377,6 @@ void	move_down(t_mlx *obj)
 		obj->env.vec.pos.x -= obj->env.vec.dir.x * move_speed;
 	if(worldmap[(int)obj->env.vec.pos.x][(int)(obj->env.vec.pos.y - obj->env.vec.dir.y * move_speed)] == 0)
 		obj->env.vec.pos.y -= obj->env.vec.dir.y * move_speed;
-	run_img(obj);
 }
 
 void	rot_right(t_mlx *obj)
@@ -400,7 +392,6 @@ void	rot_right(t_mlx *obj)
 	obj->env.vec.dir.y = old_dirx * sin(-rot_speed) + obj->env.vec.dir.y * cos(-rot_speed);
 	obj->env.vec.plane.x = obj->env.vec.plane.x * cos(-rot_speed) - obj->env.vec.plane.y * sin(-rot_speed);
 	obj->env.vec.plane.y = old_planex * sin(-rot_speed) + obj->env.vec.plane.y * cos(-rot_speed);
-	run_img(obj);
 }
 
 void	rot_left(t_mlx *obj)
@@ -416,12 +407,11 @@ void	rot_left(t_mlx *obj)
 	obj->env.vec.dir.y = old_dirx * sin(rot_speed) + obj->env.vec.dir.y * cos(rot_speed);
 	obj->env.vec.plane.x = obj->env.vec.plane.x * cos(rot_speed) - obj->env.vec.plane.y * sin(rot_speed);
 	obj->env.vec.plane.y = old_planex * sin(rot_speed) + obj->env.vec.plane.y * cos(rot_speed);
-	run_img(obj);
 }
 
 int		my_key_press(int keycode, t_mlx *obj)
 {
-	printf("Keycode: %d\n", keycode);
+	// printf("Keycode: %d\n", keycode);
 	if (keycode == 53)
 		exit_hook(obj);
 	else if (keycode == 0)
@@ -439,15 +429,16 @@ void	run_win(t_mlx *obj)
 {
 	obj->mlx = mlx_init();
 	obj->win = mlx_new_window(obj->mlx, W_WIDTH, W_HEIGHT, "Wolf3D");
+	if (obj->img)
+		mlx_destroy_image(obj->mlx, obj->img);
 	obj->img = mlx_new_image(obj->mlx, W_WIDTH, W_HEIGHT);
-	reset_struct(obj);
-	// gen_tex(obj);
-	get_texture(obj);
-	run_img(obj);
+	obj->data = mlx_get_data_addr(obj->img, &obj->bits, &obj->size_line,
+		&obj->endian);
 	// mlx_mouse_hook(obj->win, my_mouse_func, obj);
 	// mlx_hook(obj->win, 6, 0, my_mouse_movement, obj);
 	mlx_hook(obj->win, 2, 0, my_key_press, obj);
 	mlx_hook(obj->win, 17, 0, exit_hook, obj);
+	mlx_loop_hook(obj->mlx, run_img, obj);
 	mlx_loop(obj->mlx);
 }
 
@@ -458,6 +449,9 @@ int		main()
 	obj = malloc(sizeof(t_mlx));
 	if(!obj)
 		return ((int)error("Malloc failed"));
+	reset_struct(obj);
+	get_texture(obj);
 	run_win(obj);
+	free(obj);
 	return(0);
 }

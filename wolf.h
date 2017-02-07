@@ -29,6 +29,7 @@
 # define M_WIDTH 24
 # define W_HEIGHT 720
 # define W_WIDTH 1280
+# define NUM_FILES 23
 # define T_SIZE 64
 # define CH_LEN 15
 # define CH_WID 1
@@ -87,7 +88,7 @@ typedef struct		s_vec
 
 typedef struct		s_env
 {
-	int				**tex[23];
+	int				**tex[NUM_FILES];
 	t_vec			vec;
 	double			frame_time; //time of the frame
 	double			cur_time;
