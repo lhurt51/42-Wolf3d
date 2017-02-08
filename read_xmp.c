@@ -1,4 +1,3 @@
-
 #include "wolf.h"
 
 struct s_color def_colors[] =
@@ -954,7 +953,10 @@ char	**file_names(void)
 		"XMP_textures/walls/GreenWallWithShield1.XPM",
 		"XMP_textures/walls/StoneBounty0.XPM",
 		"XMP_textures/walls/StoneBounty1.XPM",
-		"XMP_textures/walls/WoodenWall1.XPM", "NULL"
+		"XMP_textures/walls/WoodenWall1.XPM",
+        "XMP_textures/sprites/BlueOverheadLight.XPM",
+        "XMP_textures/sprites/PlantinPot.XPM",
+        "NULL"
 	};
 
 	return (files);
