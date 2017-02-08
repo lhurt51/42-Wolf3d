@@ -930,7 +930,7 @@ void	store_tex_map(t_mlx *obj, t_tex *tmp, int i)
 
 char	**file_names(void)
 {
-	static char	*files[NUM_FILES + 1] = // use strjoin with "XMP_textures/walls/" to norm
+	static char	*files[T_FILES + 1] = // use strjoin with "XMP_textures/walls/" to norm
 	{
 		"XMP_textures/walls/Brown0.XPM", "XMP_textures/walls/Brown1.XPM",
 		"XMP_textures/walls/BrownBlood0.XPM",
@@ -955,7 +955,7 @@ char	**file_names(void)
 		"XMP_textures/walls/StoneBounty1.XPM",
 		"XMP_textures/walls/WoodenWall1.XPM",
         "XMP_textures/sprites/BlueOverheadLight.XPM",
-        "XMP_textures/sprites/PlantinPot.XPM",
+        "XMP_textures/sprites/PlantInPot.XPM",
         "NULL"
 	};
 
@@ -968,7 +968,7 @@ int		get_texture(t_mlx *obj)
 	char	**files;
 	int		i;
 
-	i = NUM_FILES;
+	i = T_FILES;
 	tmp = malloc(sizeof(t_tex));
 	if (!tmp)
 		return ((int)error("Malloc failed"));

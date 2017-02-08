@@ -29,10 +29,11 @@
 # define M_WIDTH 24
 # define W_HEIGHT 720
 # define W_WIDTH 1280
-# define NUM_FILES 25
-# define NUM_SPRITES 10
+# define T_FILES 25
+# define T_SPRITES 10
 # define T_SIZE 64
-# define MOVE_BUFF (X_ORIGIN / 6)
+# define ROT_BUFF (X_ORIGIN / 6)
+# define MOVE_BUFF 1.75
 # define CH_LEN 15
 # define CH_WID 1
 # define CH_OFF 4
@@ -58,6 +59,7 @@ typedef struct		s_pressed
 {
 	int				m_left;
 	int				m_right;
+	int				shift;
 	int				a;
 	int				d;
 	int				w;
@@ -93,13 +95,14 @@ typedef struct		s_vec
 
 typedef struct		s_env
 {
-	int				**tex[NUM_FILES];
+	int				**tex[T_FILES];
 	double			z_buff[W_WIDTH + 1];
 	t_vec			vec;
 	double			frame_time; //time of the frame
 	double			cur_time;
 	double			wall_dist;
 	double			wall_x;
+	double			sprint;
 	int				line_h;
 	int				side; //was a NS or a EW wall hit?
 	int				draw_start;
@@ -122,7 +125,6 @@ typedef struct		s_mlx
 }					t_mlx;
 
 void			*error(char *msg);
-unsigned int	count_ord(char *av);
 void			pixel_to_img(t_mlx *new, int x, int y, int color);
 int				get_texture(t_mlx *obj);
 

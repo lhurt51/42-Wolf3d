@@ -40,7 +40,7 @@ int		worldmap[M_WIDTH][M_HEIGHT] =
 	{2,2,2,2,1,2,2,2,2,2,2,1,2,2,2,5,5,5,5,5,5,5,5,5}
 };
 
-t_sprite	sprites[NUM_SPRITES] =
+t_sprite	sprites[T_SPRITES] =
 {
 	{{20.5, 11.5}, 23},
 	{{18.5, 4.5}, 23},
@@ -90,22 +90,22 @@ void	find_dir_step(t_mlx *obj, t_point *map, t_point *side_dist)
 	if (obj->env.vec.ray_dir.x < 0)
 	{
 		obj->env.vec.step.x = -1;
-		side_dist->x = (obj->env.vec.pos.x - (int)map->x) * obj->env.vec.delta_dist.x;
+		side_dist->x = (obj->env.vec.pos.x - map->x) * obj->env.vec.delta_dist.x;
 	}
 	else
 	{
 		obj->env.vec.step.x = 1;
-		side_dist->x = ((int)map->x + 1.0 - obj->env.vec.pos.x) * obj->env.vec.delta_dist.x;
+		side_dist->x = (map->x + 1.0 - obj->env.vec.pos.x) * obj->env.vec.delta_dist.x;
 	}
 	if (obj->env.vec.ray_dir.y < 0)
 	{
 		obj->env.vec.step.y = -1;
-		side_dist->y = (obj->env.vec.pos.y - (int)map->y) * obj->env.vec.delta_dist.y;
+		side_dist->y = (obj->env.vec.pos.y - map->y) * obj->env.vec.delta_dist.y;
 	}
 	else
 	{
 		obj->env.vec.step.y = 1;
-		side_dist->y = ((int)map->y + 1.0 - obj->env.vec.pos.y) * obj->env.vec.delta_dist.y;
+		side_dist->y = (map->y + 1.0 - obj->env.vec.pos.y) * obj->env.vec.delta_dist.y;
 	}
 }
 
@@ -139,12 +139,12 @@ void	find_draw_pnts(t_mlx *obj, t_point *map)
 {
 	//Calculate height of line to draw on screen
 	if (obj->env.side == 0)
-		obj->env.wall_dist = ((int)map->x - obj->env.vec.pos.x + (1 - obj->env.vec.step.x) / 2) / obj->env.vec.ray_dir.x;
+		obj->env.wall_dist = (map->x - obj->env.vec.pos.x + (1 - obj->env.vec.step.x) / 2) / obj->env.vec.ray_dir.x;
 	else
-		obj->env.wall_dist = ((int)map->y - obj->env.vec.pos.y + (1 - obj->env.vec.step.y) / 2) / obj->env.vec.ray_dir.y;
-	obj->env.line_h = (int)(W_HEIGHT * 1 / obj->env.wall_dist);
+		obj->env.wall_dist = (map->y - obj->env.vec.pos.y + (1 - obj->env.vec.step.y) / 2) / obj->env.vec.ray_dir.y;
+	obj->env.line_h = (int)(W_HEIGHT / obj->env.wall_dist);
 	//calculate lowest and highest pixel to fill in current stripe
-	obj->env.draw_start = -obj->env.line_h / 2 + W_HEIGHT / 2;
+	obj->env.draw_start = (-obj->env.line_h) / 2 + W_HEIGHT / 2;
 	if(obj->env.draw_start < 0)
 		obj->env.draw_start = 0;
 	obj->env.draw_end = obj->env.line_h / 2 + W_HEIGHT / 2;
@@ -177,7 +177,6 @@ void	choose_tex(t_mlx *obj, t_point *map, int x)
 	int 	tex_num;
 	int		tex_x;
 
-	ft_putendl("3");
 	tex_num = worldmap[(int)map->x][(int)map->y] + 2;
 	if (obj->env.side == 0)
 		obj->env.wall_x = obj->env.vec.pos.y + obj->env.wall_dist * obj->env.vec.ray_dir.y;
@@ -196,23 +195,21 @@ void	choose_tex(t_mlx *obj, t_point *map, int x)
 	int	color;
 	int y;
 
-	y = obj->env.draw_start;
+	y = (int)obj->env.draw_start;
 	if (tex_num > 0)
 		tex_num += tex_num;
-	printf("cor: (%d, %d) tex_x: %d\n", x, y, tex_x);
-	while (y < obj->env.draw_end)
+	while (y < (int)obj->env.draw_end)
 	{
 		ran = y * 256 - W_HEIGHT * 128 + obj->env.line_h * 128;
-		tex_y = ((ran * T_SIZE) / obj->env.line_h) / 256;
+		tex_y = abs(((ran * T_SIZE) / obj->env.line_h) / 256);
 		if (obj->env.side == 1)
 			color = obj->env.tex[tex_num + 1][tex_y][tex_x];
-		else
+		else// if ((tex_x >= 0 && tex_x < T_SIZE) && (tex_y >= 0 && tex_y < T_SIZE))
 			color = obj->env.tex[tex_num][tex_y][tex_x];
-		if ((x < W_WIDTH && x > 0) && (y < W_HEIGHT && y > 0))
+		if ((x < W_WIDTH && x >= 0) && (y < W_HEIGHT && y >= 0))
 			pixel_to_img(obj, x, y, color);
 		y++;
 	}
-	ft_putendl("4");
 }
 
 void	draw_floor(t_mlx *obj, t_point *floor_wall, int x)
@@ -240,10 +237,10 @@ void	draw_floor(t_mlx *obj, t_point *floor_wall, int x)
 		floor_tex.x = (int)(cur_floor.x * T_SIZE) % T_SIZE;
 		floor_tex.y = (int)(cur_floor.y * T_SIZE) % T_SIZE;
 		color = obj->env.tex[0][(int)floor_tex.y][(int)floor_tex.x];
-		if ((x < W_WIDTH && x > 0) && (y < W_HEIGHT && y > 0))
+		if ((x < W_WIDTH && x >= 0) && (y < W_HEIGHT && y >= 0))
 			pixel_to_img(obj, x, y, color);
 		color = obj->env.tex[22][(int)floor_tex.y][(int)floor_tex.x];
-		if ((x < W_WIDTH && x > 0) && (W_HEIGHT - y < W_HEIGHT && W_HEIGHT - y > 0))
+		if ((x < W_WIDTH && x >= 0) && (W_HEIGHT - y < W_HEIGHT && W_HEIGHT - y >= 0))
 			pixel_to_img(obj, x, W_HEIGHT - y, color);
 		y++;
 	}
@@ -256,23 +253,23 @@ void	floor_casting(t_mlx *obj, t_point *map, int x)
 
 	if (obj->env.side == 0 && obj->env.vec.ray_dir.x > 0)
 	{
-		floor_wall.x = (int)map->x;
-		floor_wall.y = (int)map->y + obj->env.wall_x;
+		floor_wall.x = map->x;
+		floor_wall.y = map->y + obj->env.wall_x;
 	}
 	else if (obj->env.side == 0 && obj->env.vec.ray_dir.x < 0)
 	{
-		floor_wall.x = (int)map->x + 1.0;
-		floor_wall.y = (int)map->y + obj->env.wall_x;
+		floor_wall.x = map->x + 1.0;
+		floor_wall.y = map->y + obj->env.wall_x;
 	}
 	else if (obj->env.side == 1 && obj->env.vec.ray_dir.y > 0)
 	{
-		floor_wall.x = (int)map->x + obj->env.wall_x;
-		floor_wall.y = (int)map->y;
+		floor_wall.x = map->x + obj->env.wall_x;
+		floor_wall.y = map->y;
 	}
 	else
 	{
-		floor_wall.x = (int)map->x + obj->env.wall_x;
-		floor_wall.y = (int)map->y + 1.0;
+		floor_wall.x = map->x + obj->env.wall_x;
+		floor_wall.y = map->y + 1.0;
 	}
 	draw_floor(obj, &floor_wall, x);
 }
@@ -284,7 +281,6 @@ void	init_rays(t_mlx *obj)
 	t_point		map;
 
 	x = W_WIDTH;
-	ft_putendl("1");
 	while (x > 0)
 	{
 		set_env(obj, &map, x);
@@ -296,7 +292,6 @@ void	init_rays(t_mlx *obj)
 		floor_casting(obj, &map, x);
 		x--;
 	}
-	ft_putendl("2");
 }
 
 void	reset_struct(t_mlx *obj)
@@ -307,8 +302,10 @@ void	reset_struct(t_mlx *obj)
 	obj->env.vec.dir.y = 0.0;
 	obj->env.vec.plane.x = 0.0;
 	obj->env.vec.plane.y = 0.66;
+	obj->env.wall_x = 0;
 	obj->keys.m_left = 0;
 	obj->keys.m_right = 0;
+	obj->keys.shift = 0;
 	obj->keys.a = 0;
 	obj->keys.s = 0;
 	obj->keys.d = 0;
@@ -398,25 +395,25 @@ void	sort_sprites(int *ord, double *dist, int amount)
 
 void	handle_sprites(t_mlx *obj)
 {
-	int		sprite_ord[NUM_SPRITES];
-	double	sprite_dis[NUM_SPRITES];
+	int		sprite_ord[T_SPRITES];
+	double	sprite_dis[T_SPRITES];
 	int		i;
 
 	i = 0;
-	while (i < NUM_SPRITES)
+	while (i < T_SPRITES)
 	{
 		sprite_ord[i] = i;
 		sprite_dis[i] = ((obj->env.vec.pos.x - sprites[i].pnt.x) * (obj->env.vec.pos.x  - sprites[i].pnt.x) + (obj->env.vec.pos.y - sprites[i].pnt.y) * (obj->env.vec.pos.y - sprites[i].pnt.y));
 		i++;
 	}
-	sort_sprites(sprite_ord, sprite_dis, NUM_SPRITES);
+	sort_sprites(sprite_ord, sprite_dis, T_SPRITES);
 }
 
 void	move_up(t_mlx *obj)
 {
 	double	move_speed;
 
-	move_speed = obj->env.frame_time * 3.0;
+	move_speed = obj->env.frame_time * (2.25 + obj->env.sprint);
 	if(worldmap[(int)(obj->env.vec.pos.x + obj->env.vec.dir.x * move_speed)][(int)obj->env.vec.pos.y] == 0)
 		obj->env.vec.pos.x += obj->env.vec.dir.x * move_speed;
 	if(worldmap[(int)obj->env.vec.pos.x][(int)(obj->env.vec.pos.y + obj->env.vec.dir.y * move_speed)] == 0)
@@ -427,7 +424,7 @@ void	move_down(t_mlx *obj)
 {
 	double	move_speed;
 
-	move_speed = obj->env.frame_time * 3.0;
+	move_speed = obj->env.frame_time * (2.25 + obj->env.sprint);
 	if(worldmap[(int)(obj->env.vec.pos.x - obj->env.vec.dir.x * move_speed)][(int)obj->env.vec.pos.y] == 0)
 		obj->env.vec.pos.x -= obj->env.vec.dir.x * move_speed;
 	if(worldmap[(int)obj->env.vec.pos.x][(int)(obj->env.vec.pos.y - obj->env.vec.dir.y * move_speed)] == 0)
@@ -438,7 +435,7 @@ void	move_right(t_mlx *obj)
 {
 	double	move_speed;
 
-	move_speed = obj->env.frame_time * 3.0;
+	move_speed = obj->env.frame_time * (2.0 + obj->env.sprint);
 	if(worldmap[(int)(obj->env.vec.pos.x + obj->env.vec.plane.x * move_speed)][(int)obj->env.vec.pos.y] == 0)
 		obj->env.vec.pos.x += obj->env.vec.plane.x * move_speed;
 	if(worldmap[(int)obj->env.vec.pos.x][(int)(obj->env.vec.pos.y + obj->env.vec.plane.y * move_speed)] == 0)
@@ -449,7 +446,7 @@ void	move_left(t_mlx *obj)
 {
 	double	move_speed;
 
-	move_speed = obj->env.frame_time * 3.0;
+	move_speed = obj->env.frame_time * (2.0 + obj->env.sprint);
 	if(worldmap[(int)(obj->env.vec.pos.x - obj->env.vec.plane.x * move_speed)][(int)obj->env.vec.pos.y] == 0)
 		obj->env.vec.pos.x -= obj->env.vec.plane.x * move_speed;
 	if(worldmap[(int)obj->env.vec.pos.x][(int)(obj->env.vec.pos.y - obj->env.vec.plane.y * move_speed)] == 0)
@@ -462,8 +459,7 @@ void	rot_right(t_mlx *obj, double off)
 	double	old_planex;
 	double	rot_speed;
 
-	off = 0;
-	rot_speed = obj->env.frame_time * (M_PI * (0.25 + off));
+	rot_speed = obj->env.frame_time * (M_PI * (0.125 + off));
 	old_dirx = obj->env.vec.dir.x;
 	old_planex = obj->env.vec.plane.x;
 	obj->env.vec.dir.x = obj->env.vec.dir.x * cos(-rot_speed) - obj->env.vec.dir.y * sin(-rot_speed);
@@ -478,8 +474,7 @@ void	rot_left(t_mlx *obj, double off)
 	double	old_planex;
 	double	rot_speed;
 
-	off = 0;
-	rot_speed = obj->env.frame_time * (M_PI * (0.25 + off));
+	rot_speed = obj->env.frame_time * (M_PI * (0.125 + off));
 	old_dirx = obj->env.vec.dir.x;
 	old_planex = obj->env.vec.plane.x;
 	obj->env.vec.dir.x = obj->env.vec.dir.x * cos(rot_speed) - obj->env.vec.dir.y * sin(rot_speed);
@@ -498,7 +493,9 @@ void 	run_mouse(t_mlx *obj)
 
 void	run_keys(t_mlx *obj)
 {
-	// printf("Keys( a: %d, s: %d, d: %d, w: %d )\n", obj->keys.a, obj->keys.s, obj->keys.d, obj->keys.w);
+	obj->env.sprint = 0.0;
+	if (obj->keys.shift == 1)
+		obj->env.sprint = MOVE_BUFF;
 	if (obj->keys.a == 1)
 		move_left(obj);
 	if (obj->keys.s == 1)
@@ -512,7 +509,6 @@ void	run_keys(t_mlx *obj)
 int		run_img(t_mlx *obj)
 {
 	obj->env.cur_time = get_time();
-	ft_putendl("Here");
 	run_keys(obj);
 	run_mouse(obj);
 	init_rays(obj);
@@ -527,15 +523,15 @@ int		my_mouse_movement(int x, int y, t_mlx *obj)
 {
 	obj->keys.m_left = 0;
 	obj->keys.m_right = 0;
-	if (x > X_ORIGIN + MOVE_BUFF && (x <= W_WIDTH && y >= 0 && y <= W_HEIGHT))
+	if (x > X_ORIGIN + ROT_BUFF && (x <= W_WIDTH && y >= 0 && y <= W_HEIGHT))
 	{
-		obj->m_off = fabs((double)((x - (X_ORIGIN + MOVE_BUFF)) / 100));
+		obj->m_off = fabs((double)((x - (X_ORIGIN + ROT_BUFF)) / 100) / 3.5);
 		obj->keys.m_right = 1;
 		obj->keys.m_left = 0;
 	}
-	else if (x < X_ORIGIN - MOVE_BUFF && (x >= 0 && y >= 0 && y <= W_HEIGHT))
+	else if (x < X_ORIGIN - ROT_BUFF && (x >= 0 && y >= 0 && y <= W_HEIGHT))
 	{
-		obj->m_off = fabs((double)((x + (X_ORIGIN - MOVE_BUFF)) / 100));
+		obj->m_off = fabs((double)((x - (X_ORIGIN - ROT_BUFF)) / 100) / 3.5);
 		obj->keys.m_left = 1;
 		obj->keys.m_right = 0;
 	}
@@ -546,6 +542,8 @@ int		my_key_press(int keycode, t_mlx *obj)
 {
 	if (keycode == 53)
 		exit_hook(obj);
+	if (keycode == 257)
+		obj->keys.shift = 1;
 	if (keycode == 0)
 		obj->keys.a = 1;
 	if (keycode == 1)
@@ -559,6 +557,8 @@ int		my_key_press(int keycode, t_mlx *obj)
 
 int		my_key_release(int keycode, t_mlx *obj)
 {
+	if (keycode == 257)
+		obj->keys.shift = 0;
 	if (keycode == 0)
 		obj->keys.a = 0;
 	if (keycode == 1)
