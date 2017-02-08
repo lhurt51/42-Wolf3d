@@ -19,28 +19,15 @@ void			*error(char *msg)
 	return (NULL);
 }
 
-unsigned int	count_ord(char *av)
-{
-	int				fd;
-	char			*tmp;
-	unsigned int	count;
-
-	count = 0;
-	fd = open(av, O_RDONLY);
-	if (fd < 0)
-		return ((int)error("failed to open file"));
-	while (get_next_line(fd, &tmp))
-		count++;
-	close(fd);
-	return (count);
-}
-
 void	pixel_to_img(t_mlx *new, int x, int y, int color)
 {
 	int		i;
 
 	i = (x * 4) + (y * new->size_line);
-	new->data[i++] = color & 0xFF;
-	new->data[i++] = (color >> 8) & 0xFF;
-	new->data[i] = (color >> 16) & 0xFF;
+	if (i > 0 && color >= 0)
+	{
+		new->data[i++] = color & 0xFF;
+		new->data[i++] = (color >> 8) & 0xFF;
+		new->data[i] = (color >> 16) & 0xFF;
+	}
 }

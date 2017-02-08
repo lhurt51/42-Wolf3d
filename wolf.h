@@ -29,12 +29,14 @@
 # define M_WIDTH 24
 # define W_HEIGHT 720
 # define W_WIDTH 1280
-# define NUM_FILES 23
+# define T_FILES 25
+# define T_SPRITES 10
 # define T_SIZE 64
-# define MOVE_BUFF (X_ORIGIN / 8)
+# define ROT_BUFF (X_ORIGIN / 6)
+# define MOVE_BUFF 1.75
 # define CH_LEN 15
 # define CH_WID 1
-# define CH_OFF 2
+# define CH_OFF 4
 # define CH_COLOR 0xFFFFFF
 # define Y_ORIGIN (W_HEIGHT / 2)
 # define X_ORIGIN (W_WIDTH / 2)
@@ -47,11 +49,22 @@ typedef struct		s_point
 	double			y;
 }					t_point;
 
-typedef struct		s_intpoint
+typedef struct		s_sprite
 {
-	int				x;
-	int				y;
-}					t_intpoint;
+	t_point			pnt;
+	int				tex;
+}					t_sprite;
+
+typedef struct		s_pressed
+{
+	int				m_left;
+	int				m_right;
+	int				shift;
+	int				a;
+	int				d;
+	int				w;
+	int				s;
+}					t_pressed;
 
 typedef struct		s_color
 {
@@ -70,13 +83,6 @@ typedef struct		s_tex
 	int				pnts[T_SIZE][T_SIZE];
 }					t_tex;
 
-typedef struct		s_line
-{
-	int				inc;
-	float			yans;
-	float			xans;
-}					t_line;
-
 typedef struct		s_vec
 {
 	t_point			pos; // x & y starting pos
@@ -89,12 +95,14 @@ typedef struct		s_vec
 
 typedef struct		s_env
 {
-	int				**tex[NUM_FILES];
+	int				**tex[T_FILES];
+	double			z_buff[W_WIDTH + 1];
 	t_vec			vec;
 	double			frame_time; //time of the frame
 	double			cur_time;
 	double			wall_dist;
 	double			wall_x;
+	double			sprint;
 	int				line_h;
 	int				side; //was a NS or a EW wall hit?
 	int				draw_start;
@@ -105,6 +113,7 @@ typedef struct		s_env
 typedef struct		s_mlx
 {
 	t_env			env;
+	t_pressed		keys;
 	void			*mlx;
 	void			*win;
 	void			*img;
@@ -112,12 +121,11 @@ typedef struct		s_mlx
 	int				bits;
 	int				size_line;
 	int				endian;
+	double			m_off;
 }					t_mlx;
 
 void			*error(char *msg);
-unsigned int	count_ord(char *av);
 void			pixel_to_img(t_mlx *new, int x, int y, int color);
-void			get_da(t_mlx *lst, t_intpoint *point1, t_intpoint *point2);
 int				get_texture(t_mlx *obj);
 
 #endif
