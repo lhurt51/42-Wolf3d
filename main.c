@@ -144,10 +144,10 @@ void	find_draw_pnts(t_mlx *obj, t_point *map)
 		obj->env.wall_dist = (map->y - obj->env.vec.pos.y + (1 - obj->env.vec.step.y) / 2) / obj->env.vec.ray_dir.y;
 	obj->env.line_h = (int)(W_HEIGHT / obj->env.wall_dist);
 	//calculate lowest and highest pixel to fill in current stripe
-	obj->env.draw_start = (-obj->env.line_h) / 2 + W_HEIGHT / 2;
+	obj->env.draw_start = -obj->env.line_h / 2 + Y_ORIGIN;
 	if(obj->env.draw_start < 0)
 		obj->env.draw_start = 0;
-	obj->env.draw_end = obj->env.line_h / 2 + W_HEIGHT / 2;
+	obj->env.draw_end = obj->env.line_h / 2 + Y_ORIGIN;
 	if(obj->env.draw_end  >= W_HEIGHT)
 		obj->env.draw_end  = W_HEIGHT - 1;
 }
@@ -393,6 +393,71 @@ void	sort_sprites(int *ord, double *dist, int amount)
 	}
 }
 
+void	draw_sprites(t_mlx *obj, int *sprite_ord)
+{
+	t_point	sprite;
+	t_point	trans;
+	t_point start;
+	t_point	end;
+	t_point tex;
+	double	mat;
+	int		w_sprite_x;
+	int		sprite_h;
+	int		stripe;
+	int		color;
+	int		ans;
+	int		tmp;
+	int		y;
+	int		i;
+
+	i = 0;
+	while (i < T_SPRITES)
+	{
+		tmp = sprite_ord[i];
+		sprite.x = sprites[tmp].pnt.x - obj->env.vec.pos.x;
+		sprite.y = sprites[tmp].pnt.y - obj->env.vec.pos.y;
+		mat = 1.0 / (obj->env.vec.plane.x * obj->env.vec.dir.y - obj->env.vec.dir.x * obj->env.vec.plane.y);
+		trans.x = mat * (obj->env.vec.dir.y * sprite.x - obj->env.vec.dir.x * sprite.y);
+		trans.y = mat * (-obj->env.vec.plane.y * sprite.x + obj->env.vec.plane.x * sprite.y);
+		w_sprite_x = (int)((X_ORIGIN * (1 + trans.x / trans.y)));
+		sprite_h = abs((int)(W_HEIGHT / trans.y));
+		start.x = -sprite_h / 2 + w_sprite_x;
+		if (start.x < 0)
+			start.x = 0;
+		start.y = -sprite_h / 2 + Y_ORIGIN;
+		if (start.y < 0)
+			start.y = 0;
+		end.x = sprite_h / 2 + w_sprite_x;
+		if (end.x >= W_WIDTH)
+			end.x = W_WIDTH - 1;
+		end.y = sprite_h / 2 + Y_ORIGIN;
+		if (end.y >= W_HEIGHT)
+			end.y = W_HEIGHT - 1;
+		stripe = start.x;
+		while (stripe < end.x)
+		{
+			tex.x = (int)(256 * (stripe - (-sprite_h / 2 + w_sprite_x)) * T_SIZE / sprite_h) / 256;
+			if (trans.y > 0 && stripe > 0 && stripe < W_WIDTH && trans.y < obj->env.z_buff[stripe])
+			{
+				y = start.y;
+				while (y < end.y)
+				{
+					tmp = sprite_ord[i];
+					tmp = sprites[tmp].tex;
+					ans = y * 256 - W_HEIGHT * 128 + sprite_h * 128;
+					tex.y = (int)((ans * T_SIZE) / sprite_h) / 256;
+					color = obj->env.tex[tmp][(int)tex.y][(int)tex.x];
+					if (color != 0x980088 && color >= 0 && (stripe < W_WIDTH && stripe >= 0) && (y < W_HEIGHT && y >= 0))
+						pixel_to_img(obj, stripe, y, color);
+					y++;
+				}
+			}
+			stripe++;
+		}
+		i++;
+	}
+}
+
 void	handle_sprites(t_mlx *obj)
 {
 	int		sprite_ord[T_SPRITES];
@@ -407,6 +472,7 @@ void	handle_sprites(t_mlx *obj)
 		i++;
 	}
 	sort_sprites(sprite_ord, sprite_dis, T_SPRITES);
+	draw_sprites(obj, sprite_ord);
 }
 
 void	move_up(t_mlx *obj)
@@ -512,7 +578,7 @@ int		run_img(t_mlx *obj)
 	run_keys(obj);
 	run_mouse(obj);
 	init_rays(obj);
-	// handle_sprites(obj);
+	handle_sprites(obj);
 	mlx_put_image_to_window(obj->mlx, obj->win, obj->img, 0, 0);
 	get_fps(obj);
 	draw_crosshair(obj);
