@@ -78,6 +78,8 @@ SRCS =	ft_putchar.c \
 		ft_lstadd.c \
 		ft_lstiter.c \
 		ft_lstmap.c \
+		ft_isupper.c \
+		ft_islower.c \
 		get_next_line.c \
 
 OBJS =	$(SRCS:.c=.o)

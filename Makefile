@@ -39,6 +39,8 @@ NAME =		wolf3d
 SRCS =		$(LIBFT)/libft.a \
 			main.c	\
 			read_xmp.c \
+			mouse_hooks.c \
+			key_hooks.c \
 			tools.c \
 
 THREAD =	-lpthread

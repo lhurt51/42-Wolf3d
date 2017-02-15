@@ -19,15 +19,74 @@ void			*error(char *msg)
 	return (NULL);
 }
 
-void	pixel_to_img(t_mlx *new, int x, int y, int color)
+int		exit_hook(t_env *obj)
+{
+	free(obj);
+	exit(0);
+}
+
+void	swap_mem(double *dst, double *src)
+{
+	double	tmp;
+
+	tmp = *src;
+	*src = *dst;
+	*dst = tmp;
+}
+
+void	swap_memin(int *dst, int *src)
+{
+	int	tmp;
+
+	tmp = *src;
+	*src = *dst;
+	*dst = tmp;
+}
+
+int		charhextoint(char *str, int i)
+{
+	char hex_d[16] = "0123456789ABCDEF";
+	int	j;
+	int	power;
+	int ans;
+
+	power = 0;
+	ans = 0;
+	while (i >= 0)
+	{
+		j = 0;
+		while (j < 16)
+		{
+			if (str[i] == hex_d[j])
+				ans += j * pow(16, power);
+			j++;
+		}
+		power++;
+		i--;
+	}
+	return (ans);
+}
+
+double	get_time(void)
+{
+	clock_serv_t	cclock;
+	mach_timespec_t	mts;
+
+	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+	clock_get_time(cclock, &mts);
+	mach_port_deallocate(mach_task_self(), cclock);
+	return (mts.tv_nsec);
+}
+
+void	pixel_to_img(t_env *new, int x, int y, int color)
 {
 	int		i;
 
-	i = (x * 4) + (y * new->size_line);
+	i = (x * 4) + (y * new->mlx.size_line);
 	if (i > 0 && color >= 0)
 	{
-		new->data[i++] = color & 0xFF;
-		new->data[i++] = (color >> 8) & 0xFF;
-		new->data[i] = (color >> 16) & 0xFF;
+		new->mlx.data[i++] = color & 0xFF;
+		new->mlx.data[i++] = (color >> 8) & 0xFF;
+		new->mlx.data[i] = (color >> 16) & 0xFF;
 	}
 }

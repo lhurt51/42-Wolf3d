@@ -1,4 +1,5 @@
 #include "wolf.h"
+#include "xpm.h"
 
 struct s_color def_colors[] =
 {
@@ -777,37 +778,6 @@ void		parse_info(t_tex *obj, char *str)
 		ft_strdel(&tmp[i++]);
 }
 
-int		charhextoint(char *str, int i)
-{
-	char hex_d[16] = "0123456789ABCDEF";
-	int	j;
-	int	power;
-	int ans;
-
-	power = 0;
-	ans = 0;
-	while (i >= 0)
-	{
-		j = 0;
-		while (j < 16)
-		{
-			if (str[i] == hex_d[j])
-				ans += j * pow(16, power);
-			j++;
-		}
-		power++;
-		i--;
-	}
-	return (ans);
-}
-
-int		ft_isupper(char c)
-{
-	if (c >= 'A' && c <= 'Z')
-		return (1);
-	return (0);
-}
-
 void	find_xt_color(t_tex *obj, char *str, int i)
 {
 	int in;
@@ -903,7 +873,7 @@ int		read_xpm(t_tex *obj, char *av, unsigned i)
 	return (1);
 }
 
-void	dup_map(t_mlx *obj, t_tex *tmp, int i)
+void	dup_map(t_env *obj, t_tex *tmp, int i)
 {
 	int x;
 	int y;
@@ -913,18 +883,18 @@ void	dup_map(t_mlx *obj, t_tex *tmp, int i)
 	{
 		x = tmp->width;
 		while (--x >= 0)
-			obj->env.tex[i][y][x] = tmp->pnts[y][x];
+			obj->tex[i][y][x] = tmp->pnts[y][x];
 	}
 }
 
-void	store_tex_map(t_mlx *obj, t_tex *tmp, int i)
+void	store_tex_map(t_env *obj, t_tex *tmp, int i)
 {
 	int	j;
 
 	j = tmp->width;
-	obj->env.tex[i] = (int**)malloc(sizeof(int*) * tmp->height);
+	obj->tex[i] = (int**)malloc(sizeof(int*) * tmp->height);
 	while (--j >= 0)
-		obj->env.tex[i][j] = (int*)malloc(sizeof(int) * tmp->width);
+		obj->tex[i][j] = (int*)malloc(sizeof(int) * tmp->width);
 	dup_map(obj, tmp, i);
 }
 
@@ -962,7 +932,7 @@ char	**file_names(void)
 	return (files);
 }
 
-int		get_texture(t_mlx *obj)
+int		get_texture(t_env *obj)
 {
 	t_tex	*tmp;
 	char	**files;
