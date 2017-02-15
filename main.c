@@ -476,7 +476,7 @@ void	run_win(t_env *obj)
 
 int		read_map(t_env *obj, char *av)
 {
-
+	
 }
 
 int		main()
