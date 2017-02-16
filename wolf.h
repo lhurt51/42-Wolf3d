@@ -108,6 +108,7 @@ typedef struct		s_m_env
 {
 	t_sprite		*sprites;
 	int				**map;
+	int				num_s;
 	int				height;
 	int				width;
 }					t_m_env;
@@ -124,6 +125,7 @@ typedef struct		s_env
 
 void			*error(char *msg);
 int				exit_hook(t_env *obj);
+unsigned int	count_lines(char **str);
 void			swap_mem(double *dst, double *src);
 void			swap_memin(int *dst, int *src);
 double			get_time(void);

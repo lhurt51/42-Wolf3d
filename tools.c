@@ -25,6 +25,16 @@ int		exit_hook(t_env *obj)
 	exit(0);
 }
 
+unsigned int	count_lines(char **str)
+{
+	unsigned int	i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
+}
+
 void	swap_mem(double *dst, double *src)
 {
 	double	tmp;
