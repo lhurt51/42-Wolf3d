@@ -17,9 +17,9 @@ void	move_up(t_env *obj)
 	double	move_speed;
 
 	move_speed = obj->var.frame_time * (2.25 + obj->var.sprint);
-	if(worldmap[(int)(obj->vec.pos.x + obj->vec.dir.x * move_speed)][(int)obj->vec.pos.y] == 0)
+	if(obj->m_env.map[(int)(obj->vec.pos.x + obj->vec.dir.x * move_speed)][(int)obj->vec.pos.y] == 0)
 		obj->vec.pos.x += obj->vec.dir.x * move_speed;
-	if(worldmap[(int)obj->vec.pos.x][(int)(obj->vec.pos.y + obj->vec.dir.y * move_speed)] == 0)
+	if(obj->m_env.map[(int)obj->vec.pos.x][(int)(obj->vec.pos.y + obj->vec.dir.y * move_speed)] == 0)
 		obj->vec.pos.y += obj->vec.dir.y * move_speed;
 }
 
@@ -28,9 +28,9 @@ void	move_down(t_env *obj)
 	double	move_speed;
 
 	move_speed = obj->var.frame_time * (2.25 + obj->var.sprint);
-	if(worldmap[(int)(obj->vec.pos.x - obj->vec.dir.x * move_speed)][(int)obj->vec.pos.y] == 0)
+	if(obj->m_env.map[(int)(obj->vec.pos.x - obj->vec.dir.x * move_speed)][(int)obj->vec.pos.y] == 0)
 		obj->vec.pos.x -= obj->vec.dir.x * move_speed;
-	if(worldmap[(int)obj->vec.pos.x][(int)(obj->vec.pos.y - obj->vec.dir.y * move_speed)] == 0)
+	if(obj->m_env.map[(int)obj->vec.pos.x][(int)(obj->vec.pos.y - obj->vec.dir.y * move_speed)] == 0)
 		obj->vec.pos.y -= obj->vec.dir.y * move_speed;
 }
 
@@ -39,9 +39,9 @@ void	move_right(t_env *obj)
 	double	move_speed;
 
 	move_speed = obj->var.frame_time * (2.0 + obj->var.sprint);
-	if(worldmap[(int)(obj->vec.pos.x + obj->vec.plane.x * move_speed)][(int)obj->vec.pos.y] == 0)
+	if(obj->m_env.map[(int)(obj->vec.pos.x + obj->vec.plane.x * move_speed)][(int)obj->vec.pos.y] == 0)
 		obj->vec.pos.x += obj->vec.plane.x * move_speed;
-	if(worldmap[(int)obj->vec.pos.x][(int)(obj->vec.pos.y + obj->vec.plane.y * move_speed)] == 0)
+	if(obj->m_env.map[(int)obj->vec.pos.x][(int)(obj->vec.pos.y + obj->vec.plane.y * move_speed)] == 0)
 		obj->vec.pos.y += obj->vec.plane.y * move_speed;
 }
 
@@ -50,9 +50,9 @@ void	move_left(t_env *obj)
 	double	move_speed;
 
 	move_speed = obj->var.frame_time * (2.0 + obj->var.sprint);
-	if(worldmap[(int)(obj->vec.pos.x - obj->vec.plane.x * move_speed)][(int)obj->vec.pos.y] == 0)
+	if(obj->m_env.map[(int)(obj->vec.pos.x - obj->vec.plane.x * move_speed)][(int)obj->vec.pos.y] == 0)
 		obj->vec.pos.x -= obj->vec.plane.x * move_speed;
-	if(worldmap[(int)obj->vec.pos.x][(int)(obj->vec.pos.y - obj->vec.plane.y * move_speed)] == 0)
+	if(obj->m_env.map[(int)obj->vec.pos.x][(int)(obj->vec.pos.y - obj->vec.plane.y * move_speed)] == 0)
 		obj->vec.pos.y -= obj->vec.plane.y * move_speed;
 }
 
