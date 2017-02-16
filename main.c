@@ -12,50 +12,6 @@
 
 #include "wolf.h"
 
-//header for ft_is && read in the map w/ sprites
-
-int		worldmap[M_WIDTH][M_HEIGHT] =
-{
-	{8,8,8,8,8,8,8,8,8,8,8,4,4,6,4,4,6,4,6,4,4,4,6,4},
-	{8,0,0,0,0,0,0,0,0,0,8,4,0,0,0,0,0,0,0,0,0,0,0,4},
-	{8,0,3,3,0,0,0,0,0,8,8,4,0,0,0,0,0,0,0,0,0,0,0,6},
-	{8,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6},
-	{8,0,3,3,0,0,0,0,0,8,8,4,0,0,0,0,0,0,0,0,0,0,0,4},
-	{8,0,0,0,0,0,0,0,0,0,8,4,0,0,0,0,0,6,6,6,0,6,4,6},
-	{8,8,8,8,0,8,8,8,8,8,8,4,4,4,4,4,4,6,0,0,0,0,0,6},
-	{7,7,7,7,0,7,7,7,7,0,8,0,8,0,8,0,8,4,0,4,0,6,0,6},
-	{7,7,0,0,0,0,0,0,7,8,0,8,0,8,0,8,8,6,0,0,0,0,0,6},
-	{7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,6,0,0,0,0,0,4},
-	{7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,6,0,6,0,6,0,6},
-	{7,7,0,0,0,0,0,0,7,8,0,8,0,8,0,8,8,6,4,6,0,6,6,6},
-	{7,7,7,7,0,7,7,7,7,8,8,4,0,6,8,4,8,3,3,3,0,3,3,3},
-	{2,2,2,2,0,2,2,2,2,4,6,4,0,0,6,0,6,3,0,0,0,0,0,3},
-	{2,2,0,0,0,0,0,2,2,4,0,0,0,0,0,0,4,3,0,0,0,0,0,3},
-	{2,0,0,0,0,0,0,0,2,4,0,0,0,0,0,0,4,3,0,0,0,0,0,3},
-	{1,0,0,0,0,0,0,0,1,4,4,4,4,4,6,0,6,3,3,0,0,0,3,3},
-	{2,0,0,0,0,0,0,0,2,2,2,1,2,2,2,6,6,0,0,5,0,5,0,5},
-	{2,2,0,0,0,0,0,2,2,2,0,0,0,2,2,0,5,0,5,0,0,0,5,5},
-	{2,0,0,0,0,0,0,0,2,0,0,0,0,0,2,5,0,5,0,5,0,5,0,5},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5},
-	{2,0,0,0,0,0,0,0,2,0,0,0,0,0,2,5,0,5,0,5,0,5,0,5},
-	{2,2,0,0,0,0,0,2,2,2,0,0,0,2,2,0,5,0,5,0,0,0,5,5},
-	{2,2,2,2,1,2,2,2,2,2,2,1,2,2,2,5,5,5,5,5,5,5,5,5}
-};
-
-t_sprite	sprites[T_SPRITES] =
-{
-	{{20.5, 11.5}, 23},
-	{{18.5, 4.5}, 23},
-	{{10.0, 4.5}, 23},
-	{{10.0, 12.5}, 23},
-	{{3.5, 6.5}, 23},
-	{{3.5, 20.5}, 23},
-	{{14.5, 20.5}, 23},
-	{{18.5, 10.5}, 24},
-	{{18.5, 11.5}, 24},
-	{{18.5, 12.5}, 24}
-};
-
 void	set_env(t_env *obj, t_point *map, int x)
 {
 	//calculate ray position and direction
@@ -115,7 +71,7 @@ void	exe_dda(t_env *obj, t_point *map, t_point *side_dist)
 			 obj->var.side = 1;
 		}
 		//Check if ray has hit a wall
-		if (worldmap[(int)map->x][(int)map->y] > 0)
+		if (obj->m_env.map[(int)map->x][(int)map->y] > 0)
 			hit = 1;
 	}
 }
@@ -162,7 +118,7 @@ void	choose_tex(t_env *obj, t_point *map, int x)
 	int 	tex_num;
 	int		tex_x;
 
-	tex_num = worldmap[(int)map->x][(int)map->y] + 2;
+	tex_num = obj->m_env.map[(int)map->x][(int)map->y] + 2;
 	if (obj->var.side == 0)
 		obj->var.wall_x = obj->vec.pos.y + obj->var.wall_dist * obj->vec.ray_dir.y;
 	else
@@ -381,8 +337,8 @@ void	draw_sprites(t_env *obj, int *sprite_ord)
 	while (i < T_SPRITES)
 	{
 		tmp = sprite_ord[i];
-		sprite.x = sprites[tmp].pnt.x - obj->vec.pos.x;
-		sprite.y = sprites[tmp].pnt.y - obj->vec.pos.y;
+		sprite.x = obj->m_env.sprites[tmp].pnt.x - obj->vec.pos.x;
+		sprite.y = obj->m_env.sprites[tmp].pnt.y - obj->vec.pos.y;
 		mat = 1.0 / (obj->vec.plane.x * obj->vec.dir.y - obj->vec.dir.x * obj->vec.plane.y);
 		trans.x = mat * (obj->vec.dir.y * sprite.x - obj->vec.dir.x * sprite.y);
 		trans.y = mat * (-obj->vec.plane.y * sprite.x + obj->vec.plane.x * sprite.y);
@@ -410,7 +366,7 @@ void	draw_sprites(t_env *obj, int *sprite_ord)
 				while (y < end.y)
 				{
 					tmp = sprite_ord[i];
-					tmp = sprites[tmp].tex;
+					tmp = obj->m_env.sprites[tmp].tex;
 					ans = y * 256 - W_HEIGHT * 128 + sprite_h * 128;
 					tex.y = (int)((ans * T_SIZE) / sprite_h) / 256;
 					color = obj->tex[tmp][(int)tex.y][(int)tex.x];
@@ -435,7 +391,7 @@ void	handle_sprites(t_env *obj)
 	while (i < T_SPRITES)
 	{
 		sprite_ord[i] = i;
-		sprite_dis[i] = ((obj->vec.pos.x - sprites[i].pnt.x) * (obj->vec.pos.x  - sprites[i].pnt.x) + (obj->vec.pos.y - sprites[i].pnt.y) * (obj->vec.pos.y - sprites[i].pnt.y));
+		sprite_dis[i] = ((obj->vec.pos.x - obj->m_env.sprites[i].pnt.x) * (obj->vec.pos.x  - obj->m_env.sprites[i].pnt.x) + (obj->vec.pos.y - obj->m_env.sprites[i].pnt.y) * (obj->vec.pos.y - obj->m_env.sprites[i].pnt.y));
 		i++;
 	}
 	sort_sprites(sprite_ord, sprite_dis, T_SPRITES);
@@ -489,14 +445,9 @@ int		store_info(t_env *obj, char *str)
 	// obj->m_env.map = (int**)malloc(sizeof(int*) * obj->m_env.height); // wtf is wrong here
 	if (!obj->m_env.sprites)
 		return (0);
-	// i = 0;
-	// while (i < obj->m_env.height)
-	// {
-	// 	obj->m_env.map[i] = (int*)malloc(sizeof(int) * obj->m_env.width);
-	// 	if (!obj->m_env.map[i])
-	// 		return (0);
-	// 	i++;
-	// }
+	obj->m_env.map = (int**)malloc(sizeof(int*) * obj->m_env.height);
+	if (!obj->m_env.map)
+		return (0);
 	i = 0;
 	while (tmp[i])
 		ft_strdel(&tmp[i++]);
@@ -550,42 +501,14 @@ void	print_board(int **board, int w, int l)
 	}
 }
 
-void	print_map(void)
-{
-	int j;
-	int x;
-
-	j = 0;
-	while (j < 24)
-	{
-		x = 0;
-		while (x < 24)
-		{
-			ft_putnbr(worldmap[j][x]);
-			ft_putchar(' ');
-			x++;
-		}
-		ft_putchar('\n');
-		j++;
-	}
-}
-
 int		store_map(t_env *obj, char *str, int x)
 {
 	char	**tmp;
 	int		i;
 
-	obj->m_env.map = (int**)malloc(sizeof(int*) * obj->m_env.height);
-	if (!obj->m_env.map)
+	obj->m_env.map[x] = (int*)malloc(sizeof(int) * obj->m_env.width);
+	if (!obj->m_env.map[x])
 		return (0);
-	i = 0;
-	while (i < obj->m_env.height)
-	{
-		obj->m_env.map[i] = (int*)malloc(sizeof(int) * obj->m_env.width);
-		if (!obj->m_env.map[i])
-			return (0);
-		i++;
-	}
 	tmp = ft_strsplit(str, ' ');
 	if ((int)count_lines(tmp) != obj->m_env.width)
 		return (0);
@@ -614,7 +537,7 @@ int		read_map(t_env *obj, char *av)
 		if (i == 0)
 			check = store_info(obj, tmp);
 		else if (i > 1 && i < obj->m_env.num_s + 2)
-			check = store_sprite(obj, tmp, i - 1);
+			check = store_sprite(obj, tmp, i - 2);
 		else if (i > obj->m_env.num_s + 2 && i < obj->m_env.num_s + obj->m_env.height + 3)
 			check = store_map(obj, tmp, (i - obj->m_env.num_s - 3));
 		if (check == 0)
@@ -636,11 +559,6 @@ int		main()
 	reset_struct(obj);
 	if (!get_texture(obj) || !read_map(obj, "test_map"))
 		return (0);
-	print_board(obj->m_env.map, 24, 24);
-	ft_putchar('\n');
-	// ft_putnbr(obj->m_env.map[3][4]);
-	// ft_putnbr(worldmap[24][24]);
-	print_map();
 	run_win(obj);
 	free(obj);
 	return(0);
