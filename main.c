@@ -169,7 +169,7 @@ void	draw_floor(t_env *obj, t_point *floor_wall, int x)
 	if (obj->var.draw_end < 0)
 		obj->var.draw_end = W_HEIGHT;
 	y = obj->var.draw_end + 1;
-	while (y < W_HEIGHT)
+	while (y <= W_HEIGHT)
 	{
 		cur_dist = W_HEIGHT / (2.0 * y - W_HEIGHT);
 		weight = (cur_dist - dist_player) / (dist_wall - dist_player);
