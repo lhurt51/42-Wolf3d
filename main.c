@@ -253,35 +253,34 @@ void	reset_struct(t_env *obj)
 	obj->mlx.keys.w = 0;
 }
 
-void		draw_crosshair(t_env *obj)
+void 		draw_chline(t_env *obj, int prim, int secn, int check)
 {
-	int	x;
-	int	y;
+	int x;
+	int y;
 
-	x = X_ORIGIN + CH_LEN;
-	while (x >= X_ORIGIN - CH_LEN)
+	x = prim + CH_LEN;
+	while (x >= prim - CH_LEN)
 	{
-		y = Y_ORIGIN + CH_WID;
-		while (y >= Y_ORIGIN - CH_WID)
+		y = secn + CH_WID;
+		while (y >= secn - CH_WID)
 		{
-			if (x > X_ORIGIN + CH_OFF || x < X_ORIGIN - CH_OFF)
-				mlx_pixel_put(obj->mlx.mlx, obj->mlx.win, x, y, CH_COLOR);
+			if (x > prim + CH_OFF || x < prim - CH_OFF)
+			{
+				if (check)
+					mlx_pixel_put(obj->mlx.mlx, obj->mlx.win, x, y, CH_COLOR);
+				else
+					mlx_pixel_put(obj->mlx.mlx, obj->mlx.win, y, x, CH_COLOR);
+			}
 			y--;
 		}
 		x--;
 	}
-	y = Y_ORIGIN + CH_LEN;
-	while (y >= Y_ORIGIN - CH_LEN)
-	{
-		x = X_ORIGIN + CH_WID;
-		while (x >= X_ORIGIN - CH_WID)
-		{
-			if (y > Y_ORIGIN + CH_OFF || y < Y_ORIGIN - CH_OFF)
-				mlx_pixel_put(obj->mlx.mlx, obj->mlx.win, x, y, CH_COLOR);
-			x--;
-		}
-		y--;
-	}
+}
+
+void		draw_crosshair(t_env *obj)
+{
+	draw_chline(obj, X_ORIGIN, Y_ORIGIN, 1);
+	draw_chline(obj, Y_ORIGIN, X_ORIGIN, 0);
 }
 
 void	sort_sprites(int *ord, double *dist, int amount)
@@ -566,6 +565,6 @@ int		main()
 	if (!get_texture(obj) || !read_map(obj, "test_map"))
 		return (0);
 	run_win(obj);
-	free(obj);
+	exit_hook(obj);
 	return(0);
 }
