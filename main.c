@@ -334,7 +334,7 @@ void	draw_sprites(t_env *obj, int *sprite_ord)
 	int		i;
 
 	i = 0;
-	while (i < T_SPRITES)
+	while (i < obj->m_env.num_s)
 	{
 		tmp = sprite_ord[i];
 		sprite.x = obj->m_env.sprites[tmp].pnt.x - obj->vec.pos.x;
@@ -383,19 +383,25 @@ void	draw_sprites(t_env *obj, int *sprite_ord)
 
 void	handle_sprites(t_env *obj)
 {
-	int		sprite_ord[T_SPRITES];
-	double	sprite_dis[T_SPRITES];
+	int		*sprite_ord;
+	double	*sprite_dis;
 	int		i;
 
 	i = 0;
-	while (i < T_SPRITES)
+	sprite_ord = (int*)malloc(sizeof(int) * obj->m_env.num_s);
+	sprite_dis = (double*)malloc(sizeof(double) * obj->m_env.num_s);
+	if (!sprite_dis || !sprite_ord)
+		exit_hook(obj);
+	while (i < obj->m_env.num_s)
 	{
 		sprite_ord[i] = i;
 		sprite_dis[i] = ((obj->vec.pos.x - obj->m_env.sprites[i].pnt.x) * (obj->vec.pos.x  - obj->m_env.sprites[i].pnt.x) + (obj->vec.pos.y - obj->m_env.sprites[i].pnt.y) * (obj->vec.pos.y - obj->m_env.sprites[i].pnt.y));
 		i++;
 	}
-	sort_sprites(sprite_ord, sprite_dis, T_SPRITES);
+	sort_sprites(sprite_ord, sprite_dis, obj->m_env.num_s);
+	ft_memdel((void**)&sprite_dis);
 	draw_sprites(obj, sprite_ord);
+	ft_memdel((void**)&sprite_ord);
 }
 
 int		run_img(t_env *obj)
