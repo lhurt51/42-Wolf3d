@@ -21,6 +21,8 @@ void			*error(char *msg)
 
 int		exit_hook(t_env *obj)
 {
+	ft_memdel((void**)&obj->m_env.sprites);
+	ft_memdel((void**)obj->m_env.map);
 	free(obj);
 	exit(0);
 }
