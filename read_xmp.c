@@ -914,13 +914,10 @@ char	**file_names(void)
 {
 	static char	*files[T_FILES + 1] = // use strjoin with "XMP_textures/walls/" to norm
 	{
-		"XMP_textures/walls/Brown0.XPM", "XMP_textures/walls/Brown1.XPM",
+		"XMP_textures/walls/Brown0.XPM",
 		"XMP_textures/walls/BrownBlood0.XPM",
-        "XMP_textures/walls/BrownBlood1.XPM",
 		"XMP_textures/walls/BrownBlood2.XPM",
-		"XMP_textures/walls/BrownBlood3.XPM",
-		"XMP_textures/walls/BrownBlood4.XPM",
-		"XMP_textures/walls/BrownBlood5.XPM",
+		"XMP_textures/walls/BrownBlood4.XPM", // [0 <-> 3] are floors
 		"XMP_textures/walls/RedBricks0.XPM",
 		"XMP_textures/walls/RedBricks1.XPM",
 		"XMP_textures/walls/RedBricksMulticolored0.XPM",
@@ -933,11 +930,26 @@ char	**file_names(void)
         "XMP_textures/walls/GreenWall1.XPM",
 		"XMP_textures/walls/GreenWallWithShield0.XPM",
 		"XMP_textures/walls/GreenWallWithShield1.XPM",
-		"XMP_textures/walls/StoneBounty0.XPM",
+		"XMP_textures/walls/WoodenWall0.XPM", // can be floor
+		"XMP_textures/walls/WoodenWall1.XPM", // can be celling
+		"XMP_textures/walls/WoodenWallWithDuf0.XPM",
+		"XMP_textures/walls/WoodenWallWithDuf1.XPM",
+		"XMP_textures/walls/WoodenWallWithFlower0.XPM",
+		"XMP_textures/walls/WoodenWallWithFlower1.XPM",
+		"XMP_textures/walls/WoodenWallWithPoster0.XPM",
+		"XMP_textures/walls/WoodenWallWithPoster1.XPM",
+		"XMP_textures/walls/WoodenWallWithSign0.XPM",
+		"XMP_textures/walls/WoodenWallWithSign1.XPM",
+		"XMP_textures/walls/WoodenWallWithStand0.XPM",
+		"XMP_textures/walls/woodenwallwithstand1.XPM",
+        "XMP_textures/walls/StoneBounty0.XPM",
 		"XMP_textures/walls/StoneBounty1.XPM",
-		"XMP_textures/walls/WoodenWall1.XPM",
+		"XMP_textures/walls/SandyWall0.XPM",
+		"XMP_textures/walls/SandyWall1.XPM", // 32
         "XMP_textures/sprites/BlueOverheadLight.XPM",
         "XMP_textures/sprites/PlantInPot.XPM",
+        "XMP_textures/sprites/HintBubble.XPM",
+        "XMP_textures/sprites/GoldBar.XPM", // 36
         "NULL"
 	};
 

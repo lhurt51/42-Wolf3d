@@ -20,14 +20,14 @@
 # include <mlx.h>
 # include "libft/libft.h"
 
-#include <stdio.h>
-#include <time.h>
-#include <mach/clock.h>
-#include <mach/mach.h>
+# include <stdio.h>
+# include <time.h>
+# include <mach/clock.h>
+# include <mach/mach.h>
 
 # define W_HEIGHT 720
 # define W_WIDTH 1280
-# define T_FILES 25
+# define T_FILES 36
 # define T_SIZE 64
 # define ROT_BUFF (X_ORIGIN / 6)
 # define MOVE_BUFF 1.75

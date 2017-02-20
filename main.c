@@ -118,7 +118,7 @@ void	choose_tex(t_env *obj, t_point *map, int x)
 	int 	tex_num;
 	int		tex_x;
 
-	tex_num = obj->m_env.map[(int)map->x][(int)map->y] + 2;
+	tex_num = obj->m_env.map[(int)map->x][(int)map->y] + 3;
 	if (obj->var.side == 0)
 		obj->var.wall_x = obj->vec.pos.y + obj->var.wall_dist * obj->vec.ray_dir.y;
 	else
@@ -137,8 +137,10 @@ void	choose_tex(t_env *obj, t_point *map, int x)
 	int y;
 
 	y = (int)obj->var.draw_start;
-	if (tex_num > 0)
-		tex_num += tex_num;
+	// if (tex_num > 0)
+	// 	tex_num += tex_num;
+	// ft_putnbr(tex_num);
+	// ft_putchar('\n');
 	while (y < (int)obj->var.draw_end)
 	{
 		ran = y * 256 - W_HEIGHT * 128 + obj->var.line_h * 128;
@@ -180,7 +182,7 @@ void	draw_floor(t_env *obj, t_point *floor_wall, int x)
 		color = obj->tex[0][(int)floor_tex.y][(int)floor_tex.x];
 		if ((x < W_WIDTH && x >= 0) && (y < W_HEIGHT && y >= 0))
 			pixel_to_img(obj, x, y, color);
-		color = obj->tex[22][(int)floor_tex.y][(int)floor_tex.x];
+		color = obj->tex[17][(int)floor_tex.y][(int)floor_tex.x];
 		if ((x < W_WIDTH && x >= 0) && (W_HEIGHT - y < W_HEIGHT && W_HEIGHT - y >= 0))
 			pixel_to_img(obj, x, W_HEIGHT - y, color);
 		y++;
@@ -237,8 +239,8 @@ void	init_rays(t_env *obj)
 
 void	reset_struct(t_env *obj)
 {
-	obj->vec.pos.x = 22.0;
-	obj->vec.pos.y = 11.5;
+	obj->vec.pos.x = 11.0;
+	obj->vec.pos.y = 11.0;
 	obj->vec.dir.x = -1.0;
 	obj->vec.dir.y = 0.0;
 	obj->vec.plane.x = 0.0;
@@ -369,7 +371,7 @@ void	draw_sprites(t_env *obj, int *sprite_ord)
 					ans = y * 256 - W_HEIGHT * 128 + sprite_h * 128;
 					tex.y = (int)((ans * T_SIZE) / sprite_h) / 256;
 					color = obj->tex[tmp][(int)tex.y][(int)tex.x];
-					if (color != 0x980088 && color >= 0 && (stripe < W_WIDTH && stripe >= 0) && (y < W_HEIGHT && y >= 0))
+					if (color != 0x980088 && color != 0x9B038B && color >= 0 && (stripe < W_WIDTH && stripe >= 0) && (y < W_HEIGHT && y >= 0))
 						pixel_to_img(obj, stripe, y, color);
 					y++;
 				}
@@ -550,7 +552,7 @@ int		read_map(t_env *obj, char *av)
 		i++;
 	}
 	if ((i - obj->m_env.num_s - 3) != obj->m_env.height)
-		return (0);
+		return ((int)error(ft_strjoin(av, ", has the wrong file height")));
 	return (1);
 }
 
@@ -562,7 +564,7 @@ int		main()
 	if(!obj)
 		return ((int)error("Malloc failed"));
 	reset_struct(obj);
-	if (!get_texture(obj) || !read_map(obj, "test_map"))
+	if (!get_texture(obj) || !read_map(obj, "test_tex"))
 		return (0);
 	run_win(obj);
 	exit_hook(obj);
