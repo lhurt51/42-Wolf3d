@@ -439,7 +439,6 @@ int		store_info(t_env *obj, char *str)
 	obj->m_env.width = ft_atoi(tmp[1]);
 	obj->m_env.height = ft_atoi(tmp[2]);
 	obj->m_env.sprites = (t_sprite*)malloc(sizeof(t_sprite) * obj->m_env.num_s);
-	// obj->m_env.map = (int**)malloc(sizeof(int*) * obj->m_env.height); // wtf is wrong here
 	if (!obj->m_env.sprites)
 		return (0);
 	obj->m_env.map = (int**)malloc(sizeof(int*) * obj->m_env.height);
