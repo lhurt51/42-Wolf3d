@@ -52,6 +52,12 @@ typedef struct		s_sprite
 	int				tex;
 }					t_sprite;
 
+typedef struct		s_sort
+{
+	int				index;
+	double			dist;
+}					t_sort;
+
 typedef struct		s_pressed
 {
 	int				m_left;

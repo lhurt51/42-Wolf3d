@@ -137,10 +137,6 @@ void	choose_tex(t_env *obj, t_point *map, int x)
 	int y;
 
 	y = (int)obj->var.draw_start;
-	// if (tex_num > 0)
-	// 	tex_num += tex_num;
-	// ft_putnbr(tex_num);
-	// ft_putchar('\n');
 	while (y < (int)obj->var.draw_end)
 	{
 		ran = y * 256 - W_HEIGHT * 128 + obj->var.line_h * 128;
@@ -223,8 +219,8 @@ void	init_rays(t_env *obj)
 	t_point		side_dist;
 	t_point		map;
 
-	x = W_WIDTH;
-	while (x > 0)
+	x = W_WIDTH + 1;
+	while (x-- > 0)
 	{
 		set_env(obj, &map, x);
 		find_dir_step(obj, &map, &side_dist);
@@ -233,7 +229,6 @@ void	init_rays(t_env *obj)
 		choose_tex(obj, &map, x);
 		obj->z_buff[x] = obj->var.wall_dist;
 		floor_casting(obj, &map, x);
-		x--;
 	}
 }
 
@@ -285,39 +280,7 @@ void		draw_crosshair(t_env *obj)
 	draw_chline(obj, Y_ORIGIN, X_ORIGIN, 0);
 }
 
-void	sort_sprites(int *ord, double *dist, int amount)
-{
-	int	i;
-	int	j;
-	int ans;
-	int swap;
-
-	i = 0;
-	swap = 0;
-	ans = amount;
-	while (ans > 1 || swap)
-	{
-		ans = (ans * 10) / 13;
-		if (ans == 9 || ans == 10)
-			ans = 11;
-		if (ans < 1)
-			ans = 1;
-		swap = 0;
-		while (i < amount - ans)
-		{
-			j = i + ans;
-			if (dist[i] < dist[j])
-			{
-				swap_mem(&dist[i], &dist[j]);
-				swap_memin(&ord[i], &ord[j]);
-				swap = 1;
-			}
-			i++;
-		}
-	}
-}
-
-void	draw_sprites(t_env *obj, int *sprite_ord)
+void	draw_sprites(t_env *obj, t_sort *ord)
 {
 	t_point	sprite;
 	t_point	trans;
@@ -334,10 +297,10 @@ void	draw_sprites(t_env *obj, int *sprite_ord)
 	int		y;
 	int		i;
 
-	i = 0;
-	while (i < obj->m_env.num_s)
+	i = obj->m_env.num_s;
+	while (i-- > 0)
 	{
-		tmp = sprite_ord[i];
+		tmp = ord[i].index;
 		sprite.x = obj->m_env.sprites[tmp].pnt.x - obj->vec.pos.x;
 		sprite.y = obj->m_env.sprites[tmp].pnt.y - obj->vec.pos.y;
 		mat = 1.0 / (obj->vec.plane.x * obj->vec.dir.y - obj->vec.dir.x * obj->vec.plane.y);
@@ -366,7 +329,7 @@ void	draw_sprites(t_env *obj, int *sprite_ord)
 				y = start.y;
 				while (y < end.y)
 				{
-					tmp = sprite_ord[i];
+					tmp = ord[i].index;
 					tmp = obj->m_env.sprites[tmp].tex;
 					ans = y * 256 - W_HEIGHT * 128 + sprite_h * 128;
 					tex.y = (int)((ans * T_SIZE) / sprite_h) / 256;
@@ -378,31 +341,58 @@ void	draw_sprites(t_env *obj, int *sprite_ord)
 			}
 			stripe++;
 		}
-		i++;
+	}
+}
+
+void	swap_allmem(t_sort *a, t_sort *b)
+{
+	swap_memin(&a->index, &b->index);
+	swap_mem(&a->dist, &b->dist);
+}
+
+void	ft_qsort(t_sort *a, int len, int start)
+{
+	int	piv;
+	int	i;
+	int	j;
+
+	if (start < len)
+	{
+		piv = start;
+		i = start;
+		j = len;
+		while (i < j)
+		{
+			while (a[i].dist <= a[piv].dist && i <= len)
+				i++;
+			while (a[j].dist > a[piv].dist)
+				j--;
+			if (i < j)
+				swap_allmem(&a[i], &a[j]);
+		}
+		swap_allmem(&a[piv], &a[j]);
+		ft_qsort(a, j - 1, start);
+		ft_qsort(a, len, j + 1);
 	}
 }
 
 void	handle_sprites(t_env *obj)
 {
-	int		*sprite_ord;
-	double	*sprite_dis;
+	t_sort	*sort;
 	int		i;
 
-	i = 0;
-	sprite_ord = (int*)malloc(sizeof(int) * obj->m_env.num_s);
-	sprite_dis = (double*)malloc(sizeof(double) * obj->m_env.num_s);
-	if (!sprite_dis || !sprite_ord)
+	i = obj->m_env.num_s;
+	sort = malloc(sizeof(t_sort) * obj->m_env.num_s);
+	if (!sort)
 		exit_hook(obj);
-	while (i < obj->m_env.num_s)
+	while (i-- > 0)
 	{
-		sprite_ord[i] = i;
-		sprite_dis[i] = ((obj->vec.pos.x - obj->m_env.sprites[i].pnt.x) * (obj->vec.pos.x  - obj->m_env.sprites[i].pnt.x) + (obj->vec.pos.y - obj->m_env.sprites[i].pnt.y) * (obj->vec.pos.y - obj->m_env.sprites[i].pnt.y));
-		i++;
+		sort[i].index = i;
+		sort[i].dist = ((obj->vec.pos.x - obj->m_env.sprites[i].pnt.x) * (obj->vec.pos.x  - obj->m_env.sprites[i].pnt.x) + (obj->vec.pos.y - obj->m_env.sprites[i].pnt.y) * (obj->vec.pos.y - obj->m_env.sprites[i].pnt.y));
 	}
-	sort_sprites(sprite_ord, sprite_dis, obj->m_env.num_s);
-	ft_memdel((void**)&sprite_dis);
-	draw_sprites(obj, sprite_ord);
-	ft_memdel((void**)&sprite_ord);
+	ft_qsort(sort, obj->m_env.num_s - 1, 0);
+	draw_sprites(obj, sort);
+	ft_memdel((void**)&sort);
 }
 
 int		run_img(t_env *obj)

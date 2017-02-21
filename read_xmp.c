@@ -941,7 +941,7 @@ char	**file_names(void)
 		"XMP_textures/walls/WoodenWallWithSign0.XPM",
 		"XMP_textures/walls/WoodenWallWithSign1.XPM",
 		"XMP_textures/walls/WoodenWallWithStand0.XPM",
-		"XMP_textures/walls/woodenwallwithstand1.XPM",
+		"XMP_textures/walls/woodenwallwithstand1.xpm",
         "XMP_textures/walls/StoneBounty0.XPM",
 		"XMP_textures/walls/StoneBounty1.XPM",
 		"XMP_textures/walls/SandyWall0.XPM",
