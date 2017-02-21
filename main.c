@@ -113,12 +113,10 @@ void	get_fps(t_env *obj)
 	ft_strdel(&print);
 }
 
-void	choose_tex(t_env *obj, t_point *map, int x)
+int		set_tex_var(t_env *obj)
 {
-	int 	tex_num;
 	int		tex_x;
 
-	tex_num = obj->m_env.map[(int)map->x][(int)map->y] + 3;
 	if (obj->var.side == 0)
 		obj->var.wall_x = obj->vec.pos.y + obj->var.wall_dist * obj->vec.ray_dir.y;
 	else
@@ -130,21 +128,28 @@ void	choose_tex(t_env *obj, t_point *map, int x)
 		tex_x = T_SIZE - tex_x - 1;
 	if (obj->var.side == 1 && obj->vec.ray_dir.y < 0)
 		tex_x = T_SIZE - tex_x - 1;
+	return (tex_x);
+}
 
-	int ran;
-	int tex_y;
-	int	color;
-	int y;
+void	choose_tex(t_env *obj, t_point *map, int x)
+{
+	t_point tex;
+	int		ran;
+	int		color;
+	int		y;
+	int 	tex_num;
 
+	tex_num = obj->m_env.map[(int)map->x][(int)map->y] + 3;
+	tex.x = set_tex_var(obj);
 	y = (int)obj->var.draw_start;
 	while (y < (int)obj->var.draw_end)
 	{
 		ran = y * 256 - W_HEIGHT * 128 + obj->var.line_h * 128;
-		tex_y = abs(((ran * T_SIZE) / obj->var.line_h) / 256);
+		tex.y = abs(((ran * T_SIZE) / obj->var.line_h) / 256);
 		if (obj->var.side == 1)
-			color = obj->tex[tex_num + 1][tex_y][tex_x];
+			color = obj->tex[tex_num + 1][(int)tex.y][(int)tex.x];
 		else// if ((tex_x >= 0 && tex_x < T_SIZE) && (tex_y >= 0 && tex_y < T_SIZE))
-			color = obj->tex[tex_num][tex_y][tex_x];
+			color = obj->tex[tex_num][(int)tex.y][(int)tex.x];
 		if ((x < W_WIDTH && x >= 0) && (y < W_HEIGHT && y >= 0))
 			pixel_to_img(obj, x, y, color);
 		y++;
@@ -155,32 +160,27 @@ void	draw_floor(t_env *obj, t_point *floor_wall, int x)
 {
 	t_point		cur_floor;
 	t_point		floor_tex;
-	double		dist_wall;
-	double		dist_player;
 	double		cur_dist;
 	double		weight;
-	int			color;
 	int			y;
 
-	dist_wall = obj->var.wall_dist;
-	dist_player = 0.0;
-	if (obj->var.draw_end < 0)
-		obj->var.draw_end = W_HEIGHT;
+	if (obj->var.draw_end < 0) obj->var.draw_end = W_HEIGHT;
 	y = obj->var.draw_end + 1;
 	while (y <= W_HEIGHT)
 	{
 		cur_dist = W_HEIGHT / (2.0 * y - W_HEIGHT);
-		weight = (cur_dist - dist_player) / (dist_wall - dist_player);
+		weight = (cur_dist - 0.0) / (obj->var.wall_dist - 0.0);
 		cur_floor.x = weight * floor_wall->x + (1.0 - weight) * obj->vec.pos.x;
 		cur_floor.y = weight * floor_wall->y + (1.0 - weight) * obj->vec.pos.y;
 		floor_tex.x = (int)(cur_floor.x * T_SIZE) % T_SIZE;
 		floor_tex.y = (int)(cur_floor.y * T_SIZE) % T_SIZE;
-		color = obj->tex[0][(int)floor_tex.y][(int)floor_tex.x];
 		if ((x < W_WIDTH && x >= 0) && (y < W_HEIGHT && y >= 0))
-			pixel_to_img(obj, x, y, color);
-		color = obj->tex[17][(int)floor_tex.y][(int)floor_tex.x];
-		if ((x < W_WIDTH && x >= 0) && (W_HEIGHT - y < W_HEIGHT && W_HEIGHT - y >= 0))
-			pixel_to_img(obj, x, W_HEIGHT - y, color);
+			pixel_to_img(obj, x, y,
+				obj->tex[0][(int)floor_tex.y][(int)floor_tex.x]);
+		if ((x < W_WIDTH && x >= 0) && (W_HEIGHT - y < W_HEIGHT &&
+				W_HEIGHT - y >= 0))
+			pixel_to_img(obj, x, W_HEIGHT - y,
+				obj->tex[17][(int)floor_tex.y][(int)floor_tex.x]);
 		y++;
 	}
 }
