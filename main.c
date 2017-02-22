@@ -135,23 +135,19 @@ void	choose_tex(t_env *obj, t_point *map, int x)
 {
 	t_point tex;
 	int		ran;
-	int		color;
 	int		y;
 	int 	tex_num;
 
-	tex_num = obj->m_env.map[(int)map->x][(int)map->y] + 3;
+	tex_num = obj->m_env.map[(int)map->x][(int)map->y] - 1;
+	tex_num = obj->tex_pal[tex_num][obj->var.side];
 	tex.x = set_tex_var(obj);
 	y = (int)obj->var.draw_start;
 	while (y < (int)obj->var.draw_end)
 	{
 		ran = y * 256 - W_HEIGHT * 128 + obj->var.line_h * 128;
 		tex.y = abs(((ran * T_SIZE) / obj->var.line_h) / 256);
-		if (obj->var.side == 1)
-			color = obj->tex[tex_num + 1][(int)tex.y][(int)tex.x];
-		else// if ((tex_x >= 0 && tex_x < T_SIZE) && (tex_y >= 0 && tex_y < T_SIZE))
-			color = obj->tex[tex_num][(int)tex.y][(int)tex.x];
 		if ((x < W_WIDTH && x >= 0) && (y < W_HEIGHT && y >= 0))
-			pixel_to_img(obj, x, y, color);
+			pixel_to_img(obj, x, y, obj->tex[tex_num][(int)tex.y][(int)tex.x]);
 		y++;
 	}
 }
@@ -255,11 +251,11 @@ void 		draw_chline(t_env *obj, int prim, int secn, int check)
 	int x;
 	int y;
 
-	x = prim + CH_LEN;
-	while (x >= prim - CH_LEN)
+	x = prim + CH_LEN + 1;
+	while (x-- > prim - CH_LEN)
 	{
-		y = secn + CH_WID;
-		while (y >= secn - CH_WID)
+		y = secn + CH_WID + 1;
+		while (y-- > secn - CH_WID)
 		{
 			if (x > prim + CH_OFF || x < prim - CH_OFF)
 			{
@@ -268,9 +264,7 @@ void 		draw_chline(t_env *obj, int prim, int secn, int check)
 				else
 					mlx_pixel_put(obj->mlx.mlx, obj->mlx.win, y, x, CH_COLOR);
 			}
-			y--;
 		}
-		x--;
 	}
 }
 
@@ -334,7 +328,7 @@ void	draw_sprites(t_env *obj, t_sort *ord)
 					ans = y * 256 - W_HEIGHT * 128 + sprite_h * 128;
 					tex.y = (int)((ans * T_SIZE) / sprite_h) / 256;
 					color = obj->tex[tmp][(int)tex.y][(int)tex.x];
-					if (color != 0x980088 && color != 0x9B038B && color >= 0 && (stripe < W_WIDTH && stripe >= 0) && (y < W_HEIGHT && y >= 0))
+					if ((color != 0x980088 && color != 0x9B038B && color >= 0) && (stripe < W_WIDTH && stripe >= 0) && (y < W_HEIGHT && y >= 0))
 						pixel_to_img(obj, stripe, y, color);
 					y++;
 				}

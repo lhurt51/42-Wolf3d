@@ -918,20 +918,20 @@ char	**file_names(void)
 		"XMP_textures/walls/BrownBlood0.XPM",
 		"XMP_textures/walls/BrownBlood2.XPM",
 		"XMP_textures/walls/BrownBlood4.XPM", // [0 <-> 3] are floors
-		"XMP_textures/walls/RedBricks0.XPM",
-		"XMP_textures/walls/RedBricks1.XPM",
+		"XMP_textures/walls/RedBricks0.XPM", // #4 T_BRICKS 8-long @ #4
+		"XMP_textures/walls/RedBricks1.XPM", // #5
 		"XMP_textures/walls/RedBricksMulticolored0.XPM",
 		"XMP_textures/walls/RedBricksMulticolored1.XPM",
 		"XMP_textures/walls/RedBricksPlanet0.XPM",
 		"XMP_textures/walls/RedBricksPlanet1.XPM",
 		"XMP_textures/walls/RedBricksSign0.XPM",
         "XMP_textures/walls/RedBricksSign1.XPM",
-        "XMP_textures/walls/GreenWall0.XPM",
-        "XMP_textures/walls/GreenWall1.XPM",
-		"XMP_textures/walls/GreenWallWithShield0.XPM",
+        "XMP_textures/walls/GreenWall0.XPM", // #12 T_GREENWALL 4-long @ #12
+        "XMP_textures/walls/GreenWall1.XPM", // #13
 		"XMP_textures/walls/GreenWallWithShield1.XPM",
-		"XMP_textures/walls/WoodenWall0.XPM", // can be floor
-		"XMP_textures/walls/WoodenWall1.XPM", // can be celling
+		"XMP_textures/walls/GreenWallWithShield0.XPM",
+		"XMP_textures/walls/WoodenWall0.XPM", // #16 can be floor T_WOODENWALL 12-long @ # 15
+		"XMP_textures/walls/WoodenWall1.XPM", // #17 can be celling
 		"XMP_textures/walls/WoodenWallWithDuf0.XPM",
 		"XMP_textures/walls/WoodenWallWithDuf1.XPM",
 		"XMP_textures/walls/WoodenWallWithFlower0.XPM",
@@ -942,18 +942,70 @@ char	**file_names(void)
 		"XMP_textures/walls/WoodenWallWithSign1.XPM",
 		"XMP_textures/walls/WoodenWallWithStand0.XPM",
 		"XMP_textures/walls/woodenwallwithstand1.xpm",
-        "XMP_textures/walls/StoneBounty0.XPM",
-		"XMP_textures/walls/StoneBounty1.XPM",
-		"XMP_textures/walls/SandyWall0.XPM",
-		"XMP_textures/walls/SandyWall1.XPM", // 32
-        "XMP_textures/sprites/BlueOverheadLight.XPM",
-        "XMP_textures/sprites/PlantInPot.XPM",
-        "XMP_textures/sprites/HintBubble.XPM",
-        "XMP_textures/sprites/GoldBar.XPM", // 36
+        "XMP_textures/walls/StoneBounty0.XPM", // #28
+		"XMP_textures/walls/StoneBounty1.XPM", // #29
+		"XMP_textures/walls/SandyWall0.XPM", // #30
+		"XMP_textures/walls/SandyWall1.XPM", // #31
+        "XMP_textures/sprites/BlueOverheadLight.XPM", // #32
+        "XMP_textures/sprites/PlantInPot.XPM", // #33
+        "XMP_textures/sprites/HintBubble.XPM", // #34
+        "XMP_textures/sprites/GoldBar.XPM", // #35
         "NULL"
 	};
 
 	return (files);
+}
+
+void	fill_pal(t_env *obj)
+{
+	obj->tex_pal[0][0] = 4; // BRICK
+	obj->tex_pal[0][1] = 5;
+	obj->tex_pal[1][0] = 6;
+	obj->tex_pal[1][1] = 7;
+	obj->tex_pal[2][0] = 6;
+	obj->tex_pal[2][1] = 5;
+	obj->tex_pal[3][0] = 4;
+	obj->tex_pal[3][1] = 7;
+	obj->tex_pal[4][0] = 8;
+	obj->tex_pal[4][1] = 5;
+	obj->tex_pal[5][0] = 4;
+	obj->tex_pal[5][1] = 9;
+	obj->tex_pal[6][0] = 10;
+	obj->tex_pal[6][1] = 5;
+	obj->tex_pal[7][0] = 4;
+	obj->tex_pal[7][1] = 11;
+	obj->tex_pal[8][0] = 12; // GREEN
+	obj->tex_pal[8][1] = 13;
+	obj->tex_pal[9][0] = 15;
+	obj->tex_pal[9][1] = 13;
+	obj->tex_pal[10][0] = 12;
+	obj->tex_pal[10][1] = 14;
+	obj->tex_pal[11][0] = 16; // WOODENWALL
+	obj->tex_pal[11][1] = 17;
+	obj->tex_pal[12][0] = 18;
+	obj->tex_pal[12][1] = 17;
+	obj->tex_pal[13][0] = 16;
+	obj->tex_pal[13][1] = 19;
+	obj->tex_pal[14][0] = 20;
+	obj->tex_pal[14][1] = 17;
+	obj->tex_pal[15][0] = 16;
+	obj->tex_pal[15][1] = 21;
+	obj->tex_pal[16][0] = 22;
+	obj->tex_pal[16][1] = 17;
+	obj->tex_pal[17][0] = 16;
+	obj->tex_pal[17][1] = 23;
+	obj->tex_pal[18][0] = 24;
+	obj->tex_pal[18][1] = 17;
+	obj->tex_pal[19][0] = 16;
+	obj->tex_pal[19][1] = 25;
+	obj->tex_pal[20][0] = 26;
+	obj->tex_pal[20][1] = 17;
+	obj->tex_pal[21][0] = 16;
+	obj->tex_pal[21][1] = 27;
+	obj->tex_pal[22][0] = 28; // SANDYWALL
+	obj->tex_pal[22][1] = 29;
+	obj->tex_pal[23][0] = 30; // STONEBOUNTY
+	obj->tex_pal[23][1] = 31;
 }
 
 int		get_texture(t_env *obj)
@@ -973,6 +1025,7 @@ int		get_texture(t_env *obj)
 			return (0);
 		store_tex_map(obj, tmp, i);
 	}
+	fill_pal(obj);
 	// if (!read_xpm(tmp, "XMP_textures/walls/Brown0.XPM")) srand(time(NULL)); int i = ran() % 8;
 	// if(!read_xpm(tmp, "XMP_textures/walls/BrownBlood5.XPM")) 1 - 7 are random floors
 	// if(!read_xpm(tmp, "XMP_textures/walls/RedBricks0.XPM")) (i - 7 % 2 == 0) ? side #1 = tex[1 + type] : tex[0 + type]

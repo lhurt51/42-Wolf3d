@@ -122,6 +122,7 @@ typedef struct		s_env
 	t_mlx			mlx;
 	t_var			var;
 	t_m_env			m_env;
+	int				tex_pal[24][2];
 	int				**tex[T_FILES];
 	double			z_buff[W_WIDTH + 1];
 }					t_env;
