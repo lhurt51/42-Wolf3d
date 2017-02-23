@@ -21,6 +21,7 @@
 # include "libft/libft.h"
 
 # include <stdio.h>
+# include <pthread.h>
 # include <time.h>
 # include <mach/clock.h>
 # include <mach/mach.h>
@@ -110,6 +111,7 @@ typedef struct		s_var
 typedef struct		s_m_env
 {
 	t_sprite		*sprites;
+	char			*av;
 	int				**map;
 	int				num_s;
 	int				height;
@@ -122,6 +124,8 @@ typedef struct		s_env
 	t_mlx			mlx;
 	t_var			var;
 	t_m_env			m_env;
+	int				ret;
+	int				load_per;
 	int				tex_pal[24][2];
 	int				**tex[T_FILES];
 	double			z_buff[W_WIDTH + 1];

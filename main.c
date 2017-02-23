@@ -140,7 +140,7 @@ void	choose_tex(t_env *obj, t_point *map, int x)
 
 	tex_num = obj->m_env.map[(int)map->x][(int)map->y] - 1;
 	tex_num = obj->tex_pal[tex_num][obj->var.side];
-	tex.x = set_tex_var(obj);
+	tex.x = abs(set_tex_var(obj));
 	y = (int)obj->var.draw_start;
 	while (y < (int)obj->var.draw_end)
 	{
@@ -168,8 +168,8 @@ void	draw_floor(t_env *obj, t_point *floor_wall, int x)
 		weight = (cur_dist - 0.0) / (obj->var.wall_dist - 0.0);
 		cur_floor.x = weight * floor_wall->x + (1.0 - weight) * obj->vec.pos.x;
 		cur_floor.y = weight * floor_wall->y + (1.0 - weight) * obj->vec.pos.y;
-		floor_tex.x = (int)(cur_floor.x * T_SIZE) % T_SIZE;
-		floor_tex.y = (int)(cur_floor.y * T_SIZE) % T_SIZE;
+		floor_tex.x = abs((int)(cur_floor.x * T_SIZE) % T_SIZE);
+		floor_tex.y = abs((int)(cur_floor.y * T_SIZE) % T_SIZE);
 		if ((x < W_WIDTH && x >= 0) && (y < W_HEIGHT && y >= 0))
 			pixel_to_img(obj, x, y,
 				obj->tex[0][(int)floor_tex.y][(int)floor_tex.x]);
@@ -237,6 +237,7 @@ void	reset_struct(t_env *obj)
 	obj->vec.plane.x = 0.0;
 	obj->vec.plane.y = 0.66;
 	obj->var.wall_x = 0;
+	obj->load_per = 0;
 	obj->mlx.keys.m_left = 0;
 	obj->mlx.keys.m_right = 0;
 	obj->mlx.keys.shift = 0;
@@ -317,7 +318,7 @@ void	draw_sprites(t_env *obj, t_sort *ord)
 		stripe = start.x;
 		while (stripe < end.x)
 		{
-			tex.x = (int)(256 * (stripe - (-sprite_h / 2 + w_sprite_x)) * T_SIZE / sprite_h) / 256;
+			tex.x = abs((int)(256 * (stripe - (-sprite_h / 2 + w_sprite_x)) * T_SIZE / sprite_h) / 256);
 			if (trans.y > 0 && stripe > 0 && stripe < W_WIDTH && trans.y < obj->z_buff[stripe])
 			{
 				y = start.y;
@@ -326,7 +327,7 @@ void	draw_sprites(t_env *obj, t_sort *ord)
 					tmp = ord[i].index;
 					tmp = obj->m_env.sprites[tmp].tex;
 					ans = y * 256 - W_HEIGHT * 128 + sprite_h * 128;
-					tex.y = (int)((ans * T_SIZE) / sprite_h) / 256;
+					tex.y = abs((int)((ans * T_SIZE) / sprite_h) / 256);
 					color = obj->tex[tmp][(int)tex.y][(int)tex.x];
 					if ((color != 0x980088 && color != 0x9B038B && color >= 0) && (stripe < W_WIDTH && stripe >= 0) && (y < W_HEIGHT && y >= 0))
 						pixel_to_img(obj, stripe, y, color);
@@ -402,10 +403,32 @@ int		run_img(t_env *obj)
 	return (0);
 }
 
-void	run_win(t_env *obj)
+void	print_board(int **board, int w, int l)
 {
-	obj->mlx.mlx = mlx_init();
-	obj->mlx.win = mlx_new_window(obj->mlx.mlx, W_WIDTH, W_HEIGHT, "Wolf3D");
+	int j;
+	int x;
+
+	j = 0;
+	while (j < w)
+	{
+		x = 0;
+		while (x < l)
+		{
+			ft_putnbr(board[j][x]);
+			ft_putchar(' ');
+			x++;
+		}
+		ft_putchar('\n');
+		j++;
+	}
+}
+
+void 	run_game(t_env *obj)
+{
+	if (obj->mlx.win)
+		mlx_clear_window(obj->mlx.mlx, obj->mlx.win);
+	else
+		obj->mlx.win = mlx_new_window(obj->mlx.mlx, W_WIDTH, W_HEIGHT, "Wolf3D");
 	if (obj->mlx.img)
 		mlx_destroy_image(obj->mlx.mlx, obj->mlx.img);
 	obj->mlx.img = mlx_new_image(obj->mlx.mlx, W_WIDTH, W_HEIGHT);
@@ -418,6 +441,61 @@ void	run_win(t_env *obj)
 	mlx_hook(obj->mlx.win, 3, 0, my_key_release, obj);
 	mlx_hook(obj->mlx.win, 17, 0, exit_hook, obj);
 	mlx_loop_hook(obj->mlx.mlx, run_img, obj);
+	mlx_loop(obj->mlx.mlx);
+}
+
+int		loading_press(int keycode, t_env *obj)
+{
+	if (keycode == 53)
+		exit_hook(obj);
+	if (keycode && obj->load_per >= 101)
+		run_game(obj);
+	return (0);
+}
+
+int		start_loading(t_env *obj)
+{
+	int	size;
+	int x;
+	int	y;
+
+	if (obj->load_per > 120)
+	{
+		obj->mlx.img = mlx_xpm_file_to_image(obj->mlx.mlx, "XMP_textures/wolfenstein-the-new-order-logo-wallpaper.XPM", &size, &size);
+		mlx_put_image_to_window(obj->mlx.mlx, obj->mlx.win, obj->mlx.img, 0, 0);
+		mlx_string_put(obj->mlx.mlx, obj->mlx.win, 5, 5, 0xFFFFFF, "Game Build by Liam Hurt, Only Intended for Educational Purposes");
+		mlx_string_put(obj->mlx.mlx, obj->mlx.win, X_ORIGIN - 130, Y_ORIGIN + 275, 0xFFFFFF, "-- Press any key to continue! --");
+	}
+	else
+	{
+		x = 29;
+		while (x++ < (int)(W_WIDTH * (obj->load_per * 0.01)) && x <= W_WIDTH - 30)
+		{
+			y = Y_ORIGIN - 21;
+			while (y++ < Y_ORIGIN + 20)
+				pixel_to_img(obj, x, y, 0xFFFFFF);
+		}
+		mlx_put_image_to_window(obj->mlx.mlx, obj->mlx.win, obj->mlx.img, 0, 0);
+		usleep(60000);
+		if (obj->load_per > 100)
+			mlx_string_put(obj->mlx.mlx, obj->mlx.win, X_ORIGIN - 70, Y_ORIGIN + 40, 0xFFFFFF, "Loading Completed!");
+		obj->load_per++;
+	}
+	return (0);
+}
+
+void 	run_loader(t_env *obj)
+{
+	obj->mlx.mlx = mlx_init();
+	obj->mlx.win = mlx_new_window(obj->mlx.mlx, W_WIDTH, W_HEIGHT, "Wolf3D");
+	if (obj->mlx.img)
+		mlx_destroy_image(obj->mlx.mlx, obj->mlx.img);
+	obj->mlx.img = mlx_new_image(obj->mlx.mlx, W_WIDTH, W_HEIGHT);
+	obj->mlx.data = mlx_get_data_addr(obj->mlx.img, &obj->mlx.bits, &obj->mlx.size_line,
+		&obj->mlx.endian);
+	mlx_hook(obj->mlx.win, 17, 0, exit_hook, obj);
+	mlx_hook(obj->mlx.win, 2, 0, loading_press, obj);
+	mlx_loop_hook(obj->mlx.mlx, start_loading, obj);
 	mlx_loop(obj->mlx.mlx);
 }
 
@@ -471,26 +549,6 @@ int		store_sprite(t_env *obj, char *str, int i)
 	return (1);
 }
 
-void	print_board(int **board, int w, int l)
-{
-	int j;
-	int x;
-
-	j = 0;
-	while (j < w)
-	{
-		x = 0;
-		while (x < l)
-		{
-			ft_putnbr(board[j][x]);
-			ft_putchar(' ');
-			x++;
-		}
-		ft_putchar('\n');
-		j++;
-	}
-}
-
 int		store_map(t_env *obj, char *str, int x)
 {
 	char	**tmp;
@@ -511,7 +569,7 @@ int		store_map(t_env *obj, char *str, int x)
 	return (1);
 }
 
-int		read_map(t_env *obj, char *av)
+int		read_map(t_env *obj)
 {
 	char	*tmp;
 	int		check;
@@ -519,9 +577,9 @@ int		read_map(t_env *obj, char *av)
 	int		fd;
 
 	i = 0;
-	fd = open(av, O_RDONLY);
+	fd = open(obj->m_env.av, O_RDONLY);
 	if (fd < 0)
-		return ((int)error(ft_strjoin("Can't open file: ", av)));
+		return ((int)error(ft_strjoin("Can't open file: ", obj->m_env.av)));
 	while (get_next_line(fd, &tmp))
 	{
 		if (i == 0)
@@ -531,25 +589,26 @@ int		read_map(t_env *obj, char *av)
 		else if (i > obj->m_env.num_s + 2 && i < obj->m_env.num_s + obj->m_env.height + 3)
 			check = store_map(obj, tmp, (i - obj->m_env.num_s - 3));
 		if (check == 0)
-			return ((int)error(ft_strjoin(av, ", has the wrong file format")));
+			return ((int)error(ft_strjoin(obj->m_env.av, ", has the wrong file format")));
 		i++;
 	}
 	if ((i - obj->m_env.num_s - 3) != obj->m_env.height)
-		return ((int)error(ft_strjoin(av, ", has the wrong file height")));
+		return ((int)error(ft_strjoin(obj->m_env.av, ", has the wrong file height")));
 	return (1);
 }
 
 int		main()
 {
-	t_env	*obj;
+	t_env		*obj;
 
 	obj = malloc(sizeof(t_env));
 	if(!obj)
 		return ((int)error("Malloc failed"));
 	reset_struct(obj);
-	if (!get_texture(obj) || !read_map(obj, "test_tex"))
+	obj->m_env.av = ft_strdup("test_tex");
+	if (!get_texture(obj) || !read_map(obj))
 		return (0);
-	run_win(obj);
+	run_loader(obj);
 	exit_hook(obj);
 	return(0);
 }

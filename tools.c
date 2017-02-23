@@ -21,8 +21,11 @@ void			*error(char *msg)
 
 int		exit_hook(t_env *obj)
 {
+	if (obj->mlx.win)
+		mlx_destroy_window(obj->mlx.mlx, obj->mlx.win);
 	ft_memdel((void**)&obj->m_env.sprites);
 	ft_memdel((void**)obj->m_env.map);
+	ft_strdel(&obj->m_env.av);
 	free(obj);
 	exit(0);
 }

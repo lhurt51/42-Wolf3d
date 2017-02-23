@@ -1018,6 +1018,7 @@ int		get_texture(t_env *obj)
 	tmp = malloc(sizeof(t_tex));
 	if (!tmp)
 		return ((int)error("Malloc failed"));
+	obj->load_per = 10;
 	files = file_names();
 	while (--i >= 0)
 	{
@@ -1026,6 +1027,7 @@ int		get_texture(t_env *obj)
 		store_tex_map(obj, tmp, i);
 	}
 	fill_pal(obj);
+	obj->load_per = 50;
 	// if (!read_xpm(tmp, "XMP_textures/walls/Brown0.XPM")) srand(time(NULL)); int i = ran() % 8;
 	// if(!read_xpm(tmp, "XMP_textures/walls/BrownBlood5.XPM")) 1 - 7 are random floors
 	// if(!read_xpm(tmp, "XMP_textures/walls/RedBricks0.XPM")) (i - 7 % 2 == 0) ? side #1 = tex[1 + type] : tex[0 + type]
