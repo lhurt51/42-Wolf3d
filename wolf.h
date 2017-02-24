@@ -40,6 +40,7 @@
 # define X_ORIGIN (W_WIDTH / 2)
 # define CAMERA_X(x) (2 * x / (double)(W_WIDTH) - 1) //x-coordinate in camera space
 # define DELTADIST(primary, secondary) (sqrt(1 + (secondary * secondary) / (primary * primary)))
+# define RANGE(x, a, b, mn, mx) (((b)-(a)) * ((x)-(mn)) / ((mx)-(mn))) + (a)
 
 typedef struct		s_point
 {
@@ -120,11 +121,12 @@ typedef struct		s_m_env
 
 typedef struct		s_env
 {
+	pthread_t		pth;
 	t_vec			vec;
 	t_mlx			mlx;
 	t_var			var;
 	t_m_env			m_env;
-	int				ret;
+	int				rtn;
 	int				load_per;
 	int				tex_pal[24][2];
 	int				**tex[T_FILES];
@@ -132,6 +134,7 @@ typedef struct		s_env
 }					t_env;
 
 void			*error(char *msg);
+int				count_ord(char *av);
 int				exit_hook(t_env *obj);
 unsigned int	count_lines(char **str);
 void			swap_mem(double *dst, double *src);

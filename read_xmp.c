@@ -865,7 +865,7 @@ int		read_xpm(t_tex *obj, char *av, unsigned i)
 	y = -1;
 	fd = open(av, O_RDONLY);
 	if (fd < 0)
-		return ((int)error(ft_strjoin("Can't open file", av)));
+		return ((int)error(ft_strjoin("Can't open file: ", av)));
 	while (get_next_line(fd, &tmp))
 	{
 		tmp = ft_strtrim(tmp, ',');
@@ -1014,20 +1014,23 @@ int		get_texture(t_env *obj)
 	char	**files;
 	int		i;
 
-	i = T_FILES;
+	i = -1;
 	tmp = malloc(sizeof(t_tex));
 	if (!tmp)
 		return ((int)error("Malloc failed"));
-	obj->load_per = 10;
 	files = file_names();
-	while (--i >= 0)
+	while (i++ < T_FILES - 1)
 	{
+		obj->load_per = RANGE(i, 0, 50, 0, T_FILES);
 		if (!read_xpm(tmp, files[i], 0))
+		{
+			obj->load_per = 103;
 			return (0);
+		}
 		store_tex_map(obj, tmp, i);
+		usleep(30000);
 	}
 	fill_pal(obj);
-	obj->load_per = 50;
 	// if (!read_xpm(tmp, "XMP_textures/walls/Brown0.XPM")) srand(time(NULL)); int i = ran() % 8;
 	// if(!read_xpm(tmp, "XMP_textures/walls/BrownBlood5.XPM")) 1 - 7 are random floors
 	// if(!read_xpm(tmp, "XMP_textures/walls/RedBricks0.XPM")) (i - 7 % 2 == 0) ? side #1 = tex[1 + type] : tex[0 + type]

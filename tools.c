@@ -19,13 +19,34 @@ void			*error(char *msg)
 	return (NULL);
 }
 
+int			count_ord(char *av)
+{
+	int				fd;
+	char			*tmp;
+	int				count;
+
+	count = 0;
+	fd = open(av, O_RDONLY);
+	if (fd < 0)
+		return (0);
+	while (get_next_line(fd, &tmp))
+		count++;
+	close(fd);
+	return (count);
+}
+
 int		exit_hook(t_env *obj)
 {
 	if (obj->mlx.win)
 		mlx_destroy_window(obj->mlx.mlx, obj->mlx.win);
-	ft_memdel((void**)&obj->m_env.sprites);
-	ft_memdel((void**)obj->m_env.map);
-	ft_strdel(&obj->m_env.av);
+	if (obj->mlx.img)
+		mlx_destroy_image(obj->mlx.mlx, obj->mlx.img);
+	if (obj->m_env.sprites)
+		ft_memdel((void**)&obj->m_env.sprites);
+	if (obj->m_env.map)
+		ft_memdel((void**)obj->m_env.map);
+	if (obj->m_env.av)
+		ft_strdel(&obj->m_env.av);
 	free(obj);
 	exit(0);
 }

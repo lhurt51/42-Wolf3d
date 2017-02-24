@@ -441,30 +441,47 @@ void 	run_game(t_env *obj)
 	mlx_hook(obj->mlx.win, 3, 0, my_key_release, obj);
 	mlx_hook(obj->mlx.win, 17, 0, exit_hook, obj);
 	mlx_loop_hook(obj->mlx.mlx, run_img, obj);
-	mlx_loop(obj->mlx.mlx);
 }
 
 int		loading_press(int keycode, t_env *obj)
 {
 	if (keycode == 53)
 		exit_hook(obj);
-	if (keycode && obj->load_per >= 101)
+	if (keycode && obj->load_per >= 102)
 		run_game(obj);
 	return (0);
 }
 
+void 	draw_center(t_env *obj)
+{
+	int i;
+
+	i = -1;
+	while (i++ < W_HEIGHT)
+		mlx_pixel_put(obj->mlx.mlx, obj->mlx.win, X_ORIGIN, i, 0xFFFFFF);
+}
+
 int		start_loading(t_env *obj)
 {
+	int	*ptr;
 	int	size;
 	int x;
 	int	y;
 
-	if (obj->load_per > 120)
+	if (obj->load_per >= 102)
 	{
-		obj->mlx.img = mlx_xpm_file_to_image(obj->mlx.mlx, "XMP_textures/wolfenstein-the-new-order-logo-wallpaper.XPM", &size, &size);
+		obj->mlx.img = mlx_xpm_file_to_image(obj->mlx.mlx, "XMP_textures/Wolfenstein-teaser2.XPM", &size, &size);
 		mlx_put_image_to_window(obj->mlx.mlx, obj->mlx.win, obj->mlx.img, 0, 0);
 		mlx_string_put(obj->mlx.mlx, obj->mlx.win, 5, 5, 0xFFFFFF, "Game Build by Liam Hurt, Only Intended for Educational Purposes");
-		mlx_string_put(obj->mlx.mlx, obj->mlx.win, X_ORIGIN - 130, Y_ORIGIN + 275, 0xFFFFFF, "-- Press any key to continue! --");
+		mlx_string_put(obj->mlx.mlx, obj->mlx.win, X_ORIGIN - 70, Y_ORIGIN, 0xFFFFFF, "Wolfenstein 3D");
+		mlx_string_put(obj->mlx.mlx, obj->mlx.win, X_ORIGIN - 165, Y_ORIGIN + 275, 0xFFFFFF, "-- Press any key to continue! --");
+		if (obj->load_per == 102)
+		{
+			if (!obj->m_env.map || !*obj->tex)
+				exit_hook(obj);
+			pthread_join(obj->pth, (void**)&(ptr));
+			obj->load_per++;
+		}
 	}
 	else
 	{
@@ -476,10 +493,8 @@ int		start_loading(t_env *obj)
 				pixel_to_img(obj, x, y, 0xFFFFFF);
 		}
 		mlx_put_image_to_window(obj->mlx.mlx, obj->mlx.win, obj->mlx.img, 0, 0);
-		usleep(60000);
 		if (obj->load_per > 100)
-			mlx_string_put(obj->mlx.mlx, obj->mlx.win, X_ORIGIN - 70, Y_ORIGIN + 40, 0xFFFFFF, "Loading Completed!");
-		obj->load_per++;
+			mlx_string_put(obj->mlx.mlx, obj->mlx.win, X_ORIGIN - 90, Y_ORIGIN + 40, 0xFFFFFF, "Loading Completed!");
 	}
 	return (0);
 }
@@ -569,7 +584,7 @@ int		store_map(t_env *obj, char *str, int x)
 	return (1);
 }
 
-int		read_map(t_env *obj)
+int		read_map(t_env *obj, int size)
 {
 	char	*tmp;
 	int		check;
@@ -582,6 +597,7 @@ int		read_map(t_env *obj)
 		return ((int)error(ft_strjoin("Can't open file: ", obj->m_env.av)));
 	while (get_next_line(fd, &tmp))
 	{
+		obj->load_per = RANGE(i, 50, 100, 0, size);
 		if (i == 0)
 			check = store_info(obj, tmp);
 		else if (i > 1 && i < obj->m_env.num_s + 2)
@@ -591,23 +607,42 @@ int		read_map(t_env *obj)
 		if (check == 0)
 			return ((int)error(ft_strjoin(obj->m_env.av, ", has the wrong file format")));
 		i++;
+		usleep(30000);
 	}
 	if ((i - obj->m_env.num_s - 3) != obj->m_env.height)
 		return ((int)error(ft_strjoin(obj->m_env.av, ", has the wrong file height")));
 	return (1);
 }
 
+void	*load_in(void *in)
+{
+	t_env	*obj;
+	int		size;
+
+	obj = (t_env*)in;
+	size = count_ord(obj->m_env.av);
+	obj->rtn = 1;
+	obj->rtn = (!get_texture(obj) || !read_map(obj, size)) ? 0 : 1;
+	obj->load_per = 101;
+	sleep(1);
+	obj->load_per = 102;
+	pthread_exit(&obj->rtn);
+	return (NULL);
+}
+
 int		main()
 {
 	t_env		*obj;
+	int			err;
 
 	obj = malloc(sizeof(t_env));
 	if(!obj)
 		return ((int)error("Malloc failed"));
 	reset_struct(obj);
 	obj->m_env.av = ft_strdup("test_tex");
-	if (!get_texture(obj) || !read_map(obj))
-		return (0);
+	err = pthread_create(&obj->pth, NULL, &load_in, obj);
+	if (err != 0)
+        return ((int)error("Creating a thread failed"));
 	run_loader(obj);
 	exit_hook(obj);
 	return(0);
