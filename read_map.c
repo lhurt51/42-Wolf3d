@@ -105,10 +105,10 @@ int		read_map(t_env *obj, int size, int i)
 		if (check == 0)
 			return ((int)error(ft_strjoin(obj->m_env.av,
 				", has the wrong file format")));
-		obj->load_per = RANGE(i++, 65, 100, 0, size);
+			obj->load_per = RANGE(i++, 65, 100, 0, size);
 	}
 	if ((i - obj->m_env.num_s - 3) != obj->m_env.height)
 		return ((int)error(ft_strjoin(obj->m_env.av,
 			", has the wrong file height")));
-	return (1);
+		return (1);
 }
