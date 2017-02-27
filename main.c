@@ -61,7 +61,7 @@ int		main(void)
 	if (!obj)
 		return ((int)error("Malloc failed"));
 	reset_struct(obj);
-	obj->m_env.av = ft_strdup("test_map");
+	obj->m_env.av = ft_strdup("test_tex");
 	err = pthread_create(&obj->pth, NULL, &load_in, obj);
 	if (err != 0)
 		return ((int)error("Creating a thread failed"));
