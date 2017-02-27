@@ -39,9 +39,24 @@ NAME =		wolf3d
 SRCS =		$(LIBFT)/libft.a \
 			main.c	\
 			read_xmp.c \
+			read_xpm1.c \
+			read_colors.c \
+			read_files.c \
+			read_map.c \
+			tex_pallet.c \
+			load_files.c \
+			run_game.c \
+			sprite_casting.c \
+			run_casting.c \
+			find_tex.c \
+			draw_floor.c \
+			xpm_to_env.c \
 			mouse_hooks.c \
+			keys_and_mouse.c \
 			key_hooks.c \
 			tools.c \
+			tools1.c \
+			tools2.c \
 
 THREAD =	-lpthread
 

@@ -28,7 +28,6 @@
 
 # define W_HEIGHT 720
 # define W_WIDTH 1280
-# define T_FILES 36
 # define T_SIZE 64
 # define ROT_BUFF (X_ORIGIN / 6)
 # define MOVE_BUFF 1.75
@@ -112,6 +111,9 @@ typedef struct		s_var
 typedef struct		s_m_env
 {
 	t_sprite		*sprites;
+	t_point 		sprite_dm;
+	t_point			start;
+	t_point			end;
 	char			*av;
 	int				**map;
 	int				num_s;
@@ -126,27 +128,34 @@ typedef struct		s_env
 	t_mlx			mlx;
 	t_var			var;
 	t_m_env			m_env;
+	double			z_buff[W_WIDTH + 1];
 	int				rtn;
 	int				load_per;
 	int				tex_pal[24][2];
-	int				**tex[T_FILES];
-	double			z_buff[W_WIDTH + 1];
+	int				***tex;
 }					t_env;
 
 void			*error(char *msg);
 int				count_ord(char *av);
 int				exit_hook(t_env *obj);
 unsigned int	count_lines(char **str);
-void			swap_mem(double *dst, double *src);
-void			swap_memin(int *dst, int *src);
 double			get_time(void);
 void			run_keys(t_env *obj);
 int				my_key_press(int keycode, t_env *obj);
 int				my_key_release(int keycode, t_env *obj);
 void 			run_mouse(t_env *obj);
 int				my_mouse_movement(int x, int y, t_env *obj);
-int				run_img(t_env *obj);
 void			pixel_to_img(t_env *new, int x, int y, int color);
 int				get_texture(t_env *obj);
+int				start_loading(t_env *obj);
+void 			run_game(t_env *obj);
+void			handle_sprites(t_env *obj);
+void			ft_qsort(t_sort *a, int len, int start);
+void			init_rays(t_env *obj);
+void			choose_tex(t_env *obj, t_point *map, int x);
+void			find_draw_pnts(t_env *obj, t_point *map);
+void			floor_casting(t_env *obj, t_point *map, int x);
+void			reset_struct(t_env *obj);
+int				read_map(t_env *obj, int size, int i);
 
 #endif
