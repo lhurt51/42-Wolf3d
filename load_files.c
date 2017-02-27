@@ -49,7 +49,7 @@ void	loading_files(t_env *obj)
 	}
 	mlx_put_image_to_window(obj->mlx.mlx, obj->mlx.win, obj->mlx.img, 0, 0);
 	if (obj->load_per > 100)
-		mlx_string_put(obj->mlx.mlx, obj->mlx.win, X_ORIGIN - 90, Y_ORIGIN +40,
+		mlx_string_put(obj->mlx.mlx, obj->mlx.win, X_ORIGIN - 90, Y_ORIGIN + 40,
 			0xFFFFFF, "Loading Completed!");
 }
 

@@ -23,7 +23,7 @@ t_point	find_sprite(t_env *obj, int tmp)
 	mat = 1.0 / (obj->vec.plane.x * obj->vec.dir.y - obj->vec.dir.x *
 		obj->vec.plane.y);
 	trans.x = mat * (obj->vec.dir.y * sprite.x - obj->vec.dir.x * sprite.y);
-	trans.y = mat * (-obj->vec.plane.y * sprite.x + obj->vec.plane.x * sprite.y);
+	trans.y = mat * (-obj->vec.plane.y * sprite.x + obj->vec.plane.x *sprite.y);
 	obj->m_env.sprite_dm.x = (int)((X_ORIGIN * (1 + trans.x / trans.y)));
 	obj->m_env.sprite_dm.y = abs((int)(W_HEIGHT / trans.y));
 	obj->m_env.start.x = -obj->m_env.sprite_dm.y / 2 + obj->m_env.sprite_dm.x;
@@ -50,19 +50,20 @@ void	draw_sprites(t_env *obj, t_point trans, int stripe, int tmp)
 
 	while (++stripe < obj->m_env.end.x)
 	{
-		tex.x = abs((int)(256*(stripe-(-obj->m_env.sprite_dm.y/
-			2+obj->m_env.sprite_dm.x))*T_SIZE/obj->m_env.sprite_dm.y)/256);
-		if (trans.y>0&&stripe>0&&stripe<W_WIDTH &&trans.y<obj->z_buff[stripe])
+		tex.x = abs((int)(256 * (stripe - (-obj->m_env.sprite_dm.y / 2 +
+			obj->m_env.sprite_dm.x)) * T_SIZE / obj->m_env.sprite_dm.y) / 256);
+		if (trans.y > 0 && stripe > 0 && stripe < W_WIDTH &&
+			trans.y < obj->z_buff[stripe])
 		{
 			y = obj->m_env.start.y - 1;
 			while (++y < obj->m_env.end.y)
 			{
 				ans = y * 256 - W_HEIGHT * 128 + obj->m_env.sprite_dm.y * 128;
-				tex.y = abs((int)((ans * T_SIZE)/obj->m_env.sprite_dm.y)/256);
+				tex.y = abs((int)((ans * T_SIZE) / obj->m_env.sprite_dm.y)/256);
 				color = obj->tex[tmp][(int)tex.y][(int)tex.x];
 				if ((color != 0x980088 && color != 0x9B038B && color >= 0) &&
-				(stripe < W_WIDTH && stripe >= 0) &&
-				(y < W_HEIGHT && y >= 0))
+					(stripe < W_WIDTH && stripe >= 0) &&
+					(y < W_HEIGHT && y >= 0))
 					pixel_to_img(obj, stripe, y, color);
 			}
 		}
@@ -98,9 +99,9 @@ void	handle_sprites(t_env *obj)
 	{
 		sort[i].index = i;
 		sort[i].dist = ((obj->vec.pos.x - obj->m_env.sprites[i].pnt.x) *
-		(obj->vec.pos.x  - obj->m_env.sprites[i].pnt.x) +
-		(obj->vec.pos.y - obj->m_env.sprites[i].pnt.y) *
-		(obj->vec.pos.y - obj->m_env.sprites[i].pnt.y));
+			(obj->vec.pos.x  - obj->m_env.sprites[i].pnt.x) +
+			(obj->vec.pos.y - obj->m_env.sprites[i].pnt.y) *
+			(obj->vec.pos.y - obj->m_env.sprites[i].pnt.y));
 	}
 	ft_qsort(sort, obj->m_env.num_s - 1, 0);
 	create_sprites(obj, sort);
