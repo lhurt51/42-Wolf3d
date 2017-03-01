@@ -35,12 +35,12 @@ typedef struct		s_tex
 	int				pnts[T_SIZE][T_SIZE];
 }					t_tex;
 
-int				charhextoint(char *str, int i);
-void			fill_pal(t_env *obj);
-int				get_color_ref(t_env *m, t_tex *obj, char *av);
-int				get_files(t_env *m, t_tex *obj, char *av);
-void			parse_info(t_tex *obj, char *str);
-void			store_color(t_tex *obj, char *str, int i, int j);
-int				read_xpm(t_tex *obj, char *av, unsigned i);
+int					charhextoint(char *str, int i);
+void				fill_pal(t_env *obj);
+int					get_color_ref(t_env *m, t_tex *obj, char *av);
+int					get_files(t_env *m, t_tex *obj, char *av);
+void				parse_info(t_tex *obj, char *str);
+void				store_color(t_tex *obj, char *str, int i, int j);
+int					read_xpm(t_tex *obj, char *av, unsigned i);
 
 #endif

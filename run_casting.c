@@ -18,8 +18,8 @@ void	set_env(t_env *obj, t_point *map, int x)
 	obj->vec.ray_dir.y = obj->vec.dir.y + obj->vec.plane.y * CAMERA_X(x);
 	map->x = (int)obj->vec.pos.x;
 	map->y = (int)obj->vec.pos.y;
-	obj->vec.delta_dist.x = DELTADIST(obj->vec.ray_dir.x, obj->vec.ray_dir.y);
-	obj->vec.delta_dist.y = DELTADIST(obj->vec.ray_dir.y, obj->vec.ray_dir.x);
+	obj->vec.delta_dist.x = DD(obj->vec.ray_dir.x, obj->vec.ray_dir.y);
+	obj->vec.delta_dist.y = DD(obj->vec.ray_dir.y, obj->vec.ray_dir.x);
 }
 
 void	find_dir_step(t_env *obj, t_point *map, t_point *side_dist)
